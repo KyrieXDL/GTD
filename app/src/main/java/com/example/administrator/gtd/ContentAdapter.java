@@ -3,6 +3,7 @@ package com.example.administrator.gtd;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 intent.putExtra("content0",content.getMsg());
                 intent.putExtra("time0",content.getTime());
                 intent.putExtra("alarmtime0",content.getAlarmTime());
+                intent.putExtra("activityName",1);
+
+                Log.d("position---",position+"");
+                Log.d("number===",content.getNum()+"");
                 //intent.putExtra("currentTime",System.currentTimeMillis());
                // intent.putExtra("isExist","1");
                 context.startActivity(intent);
@@ -67,13 +72,25 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position=holder.getAdapterPosition();
-                Content content=list.get(position);
-               // content.setChecked(true);
-                if(content.isChecked()){
+                int position = holder.getAdapterPosition();
+
+                Content content = list.get(position);
+                // content.setChecked(true);
+                if (content.isChecked()) {
                     content.setChecked(false);
-                }else{
+                    Log.d("position----",position+"");
+                    //LitePal更新数据库 2018.3.7
+                    //Content content0=new Content();
+                    //content0.setChecked(false);
+                    //content.updateAll("num=?", position + 1 + "");
+                } else {
                     content.setChecked(true);
+                    Log.d("position----",position+"");
+                    //LitePal更新数据库 2018.3.7
+                    //Content content0=new Content();
+                    //content0.setChecked(true);
+                    //content.updateAll("num=?", position + 1 + "");
+
                 }
             }
         });

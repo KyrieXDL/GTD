@@ -6,6 +6,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,9 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     private CustomDatePicker customDatePicker;
 
     private String alarmTime;
+    private int activityName;
+
+    private int number;// 事件的number
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,13 +53,17 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         String data=intent.getStringExtra("content0");
         String datatime=intent.getStringExtra("time0");    //事件创立时间
         String timetemp=intent.getStringExtra("alarmtime0");
+        number=intent.getIntExtra("num0",0);
 
+        Log.d("ContentActivity===","onCreate");
+
+        activityName=intent.getIntExtra("activityName",0);
         text.setText(data);
-        if(datatime!=null){
+        if(activityName==1){
             time.setText(datatime);
             //currentTime.setText(timetemp);
         }
-        if (timetemp!=null){
+        if (activityName==1){
             currentTime.setText(timetemp);
         }else{
             initDatePicker();
@@ -123,6 +131,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 contentTemp.setMsg(text.getText().toString());
                 contentTemp.setTime(now);
                 contentTemp.setAlarmTime(alarmTime);
+                contentTemp.setNum(number);
                 contentTemp.save();
 
                 //将事件标题显示在主界面上
@@ -131,7 +140,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 intent.putExtra("content",contentTemp.getMsg());
                 intent.putExtra("name",contentTemp.getName());
                 intent.putExtra("time",now);
-                intent.putExtra("alarmTime",contentTemp.getAlarmTime());
+                intent.putExtra("alarmTime",alarmTime);
                 intent.putExtra("currentTime",currentTime);
 
                 setResult(RESULT_OK,intent);   //回调mainActivity中的onActivityResult方法

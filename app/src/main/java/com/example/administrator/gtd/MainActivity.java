@@ -42,10 +42,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        for(int i=0;i<25;i++){
-            Content content=new Content("text"+i,false,false);
-            list.add(content);
-        }
 
         //适配器
         RecyclerView recyclerView=(RecyclerView) findViewById(R.id.conten_list);
@@ -78,20 +74,33 @@ public class MainActivity extends AppCompatActivity {
                 if(selectButton.getText().toString().equals("全选")){
                     selectButton.setText("全不选");
                     for(int i=0;i<list.size();i++){
+                        //LitePal更新数据库 2018.3.7
+                        /*Content content=list.get(i);
+                        content.setChecked(true);
+                        content.updateAll();*/
+
                         list.get(i).setChecked(true);
+                        //list.get(i).setChecked(true);
                         adapter.notifyItemInserted(i);
                     }
                     adapter.notifyDataSetChanged();
                 }else{
                     selectButton.setText("全选");
                     for(int i=0;i<list.size();i++){
+                        //LitePal更新数据库2018.3.7
+                       /* Content content=list.get(i);
+                        content.setChecked(false);
+                        content.updateAll();*/
+
                         list.get(i).setChecked(false);
                         adapter.notifyItemInserted(i);
                     }
                     adapter.notifyDataSetChanged();
                 }
+
             }
         });
+
 
         //点击删除按钮的事件
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -100,15 +109,19 @@ public class MainActivity extends AppCompatActivity {
                 /**
                  * 点击删除按钮后的将事件从数据库删除
                  */
-                DataSupport.deleteAll(Content.class,"isChecked = ?","true");
-                List<Integer> count=new ArrayList<Integer>();
+                //DataSupport.deleteAll(Content.class,"isChecked = ?","true");
+                //List<Integer> count=new ArrayList<Integer>();
 
+
+                // DataSupport.deleteAll(Content.class,"num=?",String.valueOf(true));
                 for(int i=0;i<list.size();){
                     if(list.get(i).isChecked()){
-                       //count.add(i);
+                        //litepal删除checkBox被选中的数据
+                        DataSupport.deleteAll(Content.class,"msg=?",list.get(i).getMsg());
+
                         list.remove(i);
                         adapter.notifyItemInserted(i);
-
+                        adapter.notifyItemRangeChanged(0,list.size());
                     }else{
                         i++;
                     }
@@ -116,11 +129,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 adapter.notifyDataSetChanged();
+                //当点击删除按钮后“全不选”变为“全选”
                 if (selectButton.getText().toString().equals("全不选")){
                     selectButton.setText("全选");
                 }
             }
         });
+
 
         //注册悬浮窗按钮事件
         FloatingActionButton button=(FloatingActionButton) findViewById(R.id.new_button);
@@ -129,11 +144,24 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 LitePal.getDatabase();
                 Intent intent=new Intent(MainActivity.this,ContentActivity.class);
+                intent.putExtra("num0",list.size()+1);
                 startActivityForResult(intent,1);
                 //setReminder(true);
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        list.clear();
+        List<Content> newList=DataSupport.order("msg desc").find(Content.class);
+        list.addAll(newList);
+        adapter.notifyDataSetChanged();
+        Log.d("hh","re");
+    }
+
+
 
     //发送定时广播
     private void setReminder(boolean b,Long time,String content,int num) {
@@ -195,13 +223,18 @@ public class MainActivity extends AppCompatActivity {
                     //Log.d("time",temptime);
                     Content contenttemp=new Content(content,false,false);  //新建content
                     contenttemp.setName(name);  //设置事件名称
-                    contenttemp.setTime(time);  //设置事件内容
+                    contenttemp.setTime(time);  //设置事件时间
                     contenttemp.setAlarmTime(alarmTime);  //设置提醒事件
-
                     contenttemp.setNum(list.size()+1);  //设置事件标号num
 
-                    list.add(0,contenttemp);
-                    adapter.notifyItemInserted(0);
+                    Log.d("number---",contenttemp.getNum()+"");
+                    Log.d("numbersize---",list.size()+"");
+                    list.add(list.size(),contenttemp);
+
+                    adapter.notifyItemRangeChanged(0,list.size());
+                    adapter.notifyItemInserted(list.size()-1);
+
+
                     setReminder(true,Integer.parseInt(temptime)+currentTime,content,contenttemp.getNum());
                 }
                 break;
