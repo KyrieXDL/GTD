@@ -8,7 +8,7 @@ import org.litepal.crud.DataSupport;
 
 public class Content extends DataSupport{
     private String msg;  //内容
-    private String name;
+    private String name;  //时间标题
     private String time;  //事件创立时间
     private boolean isShow; // 是否显示CheckBox
     private boolean isChecked; // 是否选中CheckBox

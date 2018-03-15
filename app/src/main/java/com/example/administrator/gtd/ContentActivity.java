@@ -1,6 +1,9 @@
 package com.example.administrator.gtd;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +17,12 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.litepal.crud.DataSupport;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -33,10 +41,13 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     private int activityName;
 
     private int number;// 事件的number
+    private int numFromContentActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content);
+        /*
+        * 初始化控件*/
         Toolbar toolbar=(Toolbar) findViewById(R.id.contentToolBar);
         setSupportActionBar(toolbar);
         text=(EditText) findViewById(R.id.edit_text);
@@ -54,19 +65,34 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         String datatime=intent.getStringExtra("time0");    //事件创立时间
         String timetemp=intent.getStringExtra("alarmtime0");
         number=intent.getIntExtra("num0",0);
+        numFromContentActivity=intent.getIntExtra("numFromContentActivity",0);
+
 
         Log.d("ContentActivity===","onCreate");
 
-        activityName=intent.getIntExtra("activityName",0);
+        activityName=intent.getIntExtra("activityName",0);  //区分是哪个activity
         text.setText(data);
+
+        /*
+        * intent来自ContentAdapter时*/
         if(activityName==1){
-            time.setText(datatime);
-            //currentTime.setText(timetemp);
+            time.setText(datatime);  //设置事件创立时间
+
         }
         if (activityName==1){
-            currentTime.setText(timetemp);
+            currentTime.setText(timetemp);  //设置提醒时间
+            alarmTime=currentTime.getText().toString(); //设置alarmTime的默认值
+            customDatePicker = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
+                @Override
+                public void handle(String time) { // 回调接口，获得选中的时间
+                    currentTime.setText(time);
+                    alarmTime=time;
+                }
+            }, "2010-01-01 00:00", "2050-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
+            customDatePicker.showSpecificTime(true); // 显示时和分
+            customDatePicker.setIsLoop(true); // 允许循环滚动
         }else{
-            initDatePicker();
+            initDatePicker();   //初始化时间选择控件
         }
     }
 
@@ -81,6 +107,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void initDatePicker() {
+        Log.d("Check===","yes");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         String now = sdf.format(new Date());
         currentTime.setText(now);
@@ -89,6 +116,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             public void handle(String time) { // 回调接口，获得选中的时间
                 currentTime.setText(time);
                 alarmTime=time;
+                Log.d("Check2===","yes");
             }
         }, "2010-01-01 00:00", "2050-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
         customDatePicker.showSpecificTime(true); // 显示时和分
@@ -106,6 +134,47 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         super.onDestroy();
     }
 
+    public void setReminder(boolean b,Long time,String content,int num) {
+        // get the AlarmManager instance
+        AlarmManager am= (AlarmManager) getSystemService(ALARM_SERVICE);
+        // create a PendingIntent that will perform a broadcast
+        Intent intent=new Intent(ContentActivity.this,MyReceiver.class);
+        intent.putExtra("content1",content); //发送广播的同时，将事件的内容传给receiver，当点击通知时显示在界面上
+        intent.putExtra("num1",num+"");  //num为每个事件唯一标号
+        PendingIntent pi= PendingIntent.getBroadcast(ContentActivity.this, num, intent, 0);
+
+        if(b){
+            // just use current time as the Alarm time.
+            Calendar c=Calendar.getInstance();
+            c.setTimeInMillis(time);
+            // schedule an alarm
+            am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+        }
+        else{
+            // cancel current alarm
+            am.cancel(pi);
+        }
+    }
+
+    //最新修改
+    public String getTimeDifferenceHour(String starTime, String endTime) {
+        String timeString = "";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endTime);
+
+            long diff = parse1.getTime() - parse.getTime();
+            String string = Long.toString(diff);
+            timeString=string;
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return timeString;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -117,34 +186,62 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                finish();
                 break;
             case R.id.save:
-                //设置新建时间的时间
-                date=new Date(System.currentTimeMillis());
-                str_time=date.toLocaleString();
-                time.setText(str_time);
-                Long currentTime=System.currentTimeMillis();
+                /*
+                * 由MainActivity跳转到当前活动，则进行保存数据*/
+                if(activityName!=1){
+                    //设置新建时间的时间
+                    date=new Date(System.currentTimeMillis());
+                    str_time=date.toLocaleString();
+                    time.setText(str_time);
+                    Long currentTime=System.currentTimeMillis();
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
-                String now = sdf.format(new Date());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+                    String now = sdf.format(new Date());
 
-                //将数据保存到数据库中，并在主界面添加事件
-                Content contentTemp=new Content("",false,false);
-                contentTemp.setMsg(text.getText().toString());
-                contentTemp.setTime(now);
-                contentTemp.setAlarmTime(alarmTime);
-                contentTemp.setNum(number);
-                contentTemp.save();
+                    //将数据保存到数据库中，并在主界面添加事件
+                    Content contentTemp=new Content("",false,false);
+                    contentTemp.setMsg(text.getText().toString());
+                    contentTemp.setTime(now);
 
-                //将事件标题显示在主界面上
-                //String content=text.getText().toString();
-                Intent intent=new Intent();
-                intent.putExtra("content",contentTemp.getMsg());
-                intent.putExtra("name",contentTemp.getName());
-                intent.putExtra("time",now);
-                intent.putExtra("alarmTime",alarmTime);
-                intent.putExtra("currentTime",currentTime);
+                    if (alarmTime!=null){
+                    contentTemp.setAlarmTime(alarmTime);}
+                    else{
+                        contentTemp.setAlarmTime(now);  //如果未设置提醒时间则初始化为当前事件
+                    }
+                    contentTemp.setNum(number);
+                    contentTemp.save();
 
-                setResult(RESULT_OK,intent);   //回调mainActivity中的onActivityResult方法
-                Toast.makeText(ContentActivity.this,"save success",Toast.LENGTH_SHORT).show();
+                    /*Intent intent=new Intent();
+                    intent.putExtra("content",text.getText().toString());
+                    intent.putExtra("name",contentTemp.getName());
+                    intent.putExtra("time",now);
+                    intent.putExtra("alarmTime",alarmTime);
+                    intent.putExtra("currentTime",currentTime);*/
+                    /*
+                    * 如果用户在创立事件时设置提醒时间，则发送广播*/
+                    String temptime=getTimeDifferenceHour(now,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                    if(alarmTime!=null) {
+                       // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
+                        setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                    }
+                    Toast.makeText(ContentActivity.this,"保存成功",Toast.LENGTH_SHORT).show();
+                }else if(activityName==1){  //由ContentAdapter跳转到当前活动则进行修改更新数据
+                    /*最新修改 2018-3-13 11.20*/
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+                    String now = sdf.format(new Date());
+                    Long currentTime=System.currentTimeMillis();
+
+                    ContentValues values=new ContentValues();
+                    values.put("msg",text.getText().toString());
+                    values.put("alarmTime",alarmTime);
+                    values.put("time",now);
+                    time.setText(now);
+                    DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
+
+                    String temptime=getTimeDifferenceHour(now,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                    setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                    Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.delete:
                 /*

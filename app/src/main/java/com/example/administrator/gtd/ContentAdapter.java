@@ -59,6 +59,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 intent.putExtra("alarmtime0",content.getAlarmTime());
                 intent.putExtra("activityName",1);
 
+                intent.putExtra("numFromContentActivity",content.getNum());
+               // intent.putExtra("position",position);
                 Log.d("position---",position+"");
                 Log.d("number===",content.getNum()+"");
                 //intent.putExtra("currentTime",System.currentTimeMillis());

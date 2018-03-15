@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 LitePal.getDatabase();
                 Intent intent=new Intent(MainActivity.this,ContentActivity.class);
+                Log.d("numId",list.get(0).getNum()+"");
                 intent.putExtra("num0",list.size()+1);
                 startActivityForResult(intent,1);
                 //setReminder(true);
@@ -161,51 +162,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("hh","re");
     }
 
-
-
-    //发送定时广播
-    private void setReminder(boolean b,Long time,String content,int num) {
-        // get the AlarmManager instance
-        AlarmManager am= (AlarmManager) getSystemService(ALARM_SERVICE);
-        // create a PendingIntent that will perform a broadcast
-        Intent intent=new Intent(MainActivity.this,MyReceiver.class);
-        intent.putExtra("content1",content); //发送广播的同时，将事件的内容传给receiver，当点击通知时显示在界面上
-        intent.putExtra("num1",num+"");  //num为每个事件唯一标号
-        PendingIntent pi= PendingIntent.getBroadcast(MainActivity.this, num, intent, 0);
-
-        if(b){
-            // just use current time as the Alarm time.
-            Calendar c=Calendar.getInstance();
-            c.setTimeInMillis(time);
-            // schedule an alarm
-            am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
-        }
-        else{
-            // cancel current alarm
-            am.cancel(pi);
-        }
-
-    }
-
-    public String getTimeDifferenceHour(String starTime, String endTime) {
-        String timeString = "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-        try {
-            Date parse = dateFormat.parse(starTime);
-            Date parse1 = dateFormat.parse(endTime);
-
-            long diff = parse1.getTime() - parse.getTime();
-            String string = Long.toString(diff);
-            timeString=string;
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return timeString;
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
@@ -213,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 if(resultCode==RESULT_OK){
 
                     //当save按钮被按下时，回调当前方法，并新建变量获取用户填写的数据
-                    String content=data.getStringExtra("content");
+                   /* String content=data.getStringExtra("content");
                     String name=data.getStringExtra("name");
                     String time=data.getStringExtra("time");
                     String alarmTime=data.getStringExtra("alarmTime");
@@ -222,20 +178,18 @@ public class MainActivity extends AppCompatActivity {
                     String temptime=getTimeDifferenceHour(time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
                     //Log.d("time",temptime);
                     Content contenttemp=new Content(content,false,false);  //新建content
-                    contenttemp.setName(name);  //设置事件名称
+                   // contenttemp.setName(name);  //设置事件名称
                     contenttemp.setTime(time);  //设置事件时间
                     contenttemp.setAlarmTime(alarmTime);  //设置提醒事件
                     contenttemp.setNum(list.size()+1);  //设置事件标号num
 
-                    Log.d("number---",contenttemp.getNum()+"");
-                    Log.d("numbersize---",list.size()+"");
-                    list.add(list.size(),contenttemp);
+                    //Log.d("number---",contenttemp.getNum()+"");
+                    //Log.d("numbersize---",list.size()+"");
+                    //list.add(list.size(),contenttemp);
 
-                    adapter.notifyItemRangeChanged(0,list.size());
-                    adapter.notifyItemInserted(list.size()-1);
-
-
-                    setReminder(true,Integer.parseInt(temptime)+currentTime,content,contenttemp.getNum());
+                    //adapter.notifyItemRangeChanged(0,list.size());
+                    //adapter.notifyItemInserted(list.size()-1);
+                    setReminder(true,Integer.parseInt(temptime)+currentTime,content,contenttemp.getNum());*/
                 }
                 break;
             default:
