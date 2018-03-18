@@ -1,5 +1,6 @@
 package com.example.administrator.gtd;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
@@ -119,6 +124,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         }else{
             holder.checkBox.setChecked(true);
         }
+        content.setNum(position);
+
+        ContentValues values=new ContentValues();
+        values.put("num",position);
+        DataSupport.updateAll(Content.class,values,"msg=?",content.getMsg());
+
     }
 
     @Override

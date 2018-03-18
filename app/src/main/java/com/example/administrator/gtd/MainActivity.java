@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 LitePal.getDatabase();
                 Intent intent=new Intent(MainActivity.this,ContentActivity.class);
-                Log.d("numId",list.get(0).getNum()+"");
+               // Log.d("numId",list.get(0).getNum()+"");
                 intent.putExtra("num0",list.size()+1);
                 startActivityForResult(intent,1);
                 //setReminder(true);
