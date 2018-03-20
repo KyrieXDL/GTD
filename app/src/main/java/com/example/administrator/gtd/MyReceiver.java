@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -19,7 +20,7 @@ public class MyReceiver extends BroadcastReceiver {
         // TODO: This method is called when the BroadcastReceiver is receiving
         String content=intent.getStringExtra("content1");
         int num=Integer.parseInt(intent.getStringExtra("num1"));
-
+        Log.d("alarmContent=",content);
         //intent.putExtra("content2",content);
         intent.setClass(context, AlarmActivity.class);
         PendingIntent pi=PendingIntent.getActivity(context,num,intent,0);

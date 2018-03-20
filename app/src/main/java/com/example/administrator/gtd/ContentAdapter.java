@@ -3,6 +3,7 @@ package com.example.administrator.gtd;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -129,6 +130,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         ContentValues values=new ContentValues();
         values.put("num",position);
         DataSupport.updateAll(Content.class,values,"msg=?",content.getMsg());
+
+        if(content.isDone()){
+            holder.contentName.setTextColor(Color.BLACK);
+        }else{
+            holder.contentName.setTextColor(Color.RED);
+        }
 
     }
 

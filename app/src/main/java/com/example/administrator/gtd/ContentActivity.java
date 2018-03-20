@@ -215,6 +215,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                         contentTemp.setAlarmTime(now);  //如果未设置提醒时间则初始化为当前事件
                     }
                     contentTemp.setNum(number);
+                    contentTemp.setDone(false);
                     contentTemp.save();
 
                     /*
@@ -236,6 +237,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     values.put("alarmTime",alarmTime);
                     values.put("time",now);
                     time.setText(now);
+
+                    Log.d("alarmContent=",text.getText().toString());
                     Log.d("numFromContentActivity",numFromContentActivity+"");
                     DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
 

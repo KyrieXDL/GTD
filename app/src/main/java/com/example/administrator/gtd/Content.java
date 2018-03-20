@@ -15,6 +15,8 @@ public class Content extends DataSupport{
     private String alarmTime;  //事件的提醒时间
     private int num;
 
+    private boolean isDone;  //判断用户是否已经执行了这件事
+
     public Content(String msg, boolean isShow, boolean isChecked) {
         this.msg = msg;
         this.isShow = isShow;
@@ -25,6 +27,7 @@ public class Content extends DataSupport{
         }else{
             name=msg;
         }
+        isDone=false;
     }
     public String getMsg() {
         return msg;
@@ -74,5 +77,13 @@ public class Content extends DataSupport{
 
     public void setNum(int num) {
         this.num = num;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 }
