@@ -11,8 +11,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -46,7 +49,11 @@ public class MainActivity extends AppCompatActivity {
         //适配器
         RecyclerView recyclerView=(RecyclerView) findViewById(R.id.conten_list);
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        GridLayoutManager gridLayoutManager=new GridLayoutManager(this,2);
+        StaggeredGridLayoutManager staggeredGridLayoutManager= new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        //设置布局管理器
+        recyclerView.setLayoutManager(staggeredGridLayoutManager);
+        layoutManager.setOrientation(OrientationHelper.VERTICAL);
         adapter=new ContentAdapter(MainActivity.this,list);
         recyclerView.setAdapter(adapter);
 

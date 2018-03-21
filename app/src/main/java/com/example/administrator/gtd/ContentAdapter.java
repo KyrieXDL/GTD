@@ -110,9 +110,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         //String name=contentList.get(position);
         Content content=list.get(position);
         String temp=content.getMsg();
-        if(temp.length()>10){
+        /*if(temp.length()>10){
             temp=temp.substring(0,10);
-        }
+        }*/
         holder.contentName.setText(temp);
         if(!content.isShow()){
             holder.checkBox.setVisibility(View.GONE);
