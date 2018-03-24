@@ -144,6 +144,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         AlarmManager am= (AlarmManager) getSystemService(ALARM_SERVICE);
         // create a PendingIntent that will perform a broadcast
         Intent intent=new Intent(ContentActivity.this,MyReceiver.class);
+        intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);//3.1以后的版本需要设置Intent.FLAG_INCLUDE_STOPPED_PACKAGES
         intent.putExtra("content1",content); //发送广播的同时，将事件的内容传给receiver，当点击通知时显示在界面上
         intent.putExtra("num1",num+"");  //num为每个事件唯一标号
         PendingIntent pi= PendingIntent.getBroadcast(ContentActivity.this, num, intent, 0);
@@ -220,7 +221,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
                     /*
                     * 如果用户在创立事件时设置提醒时间，则发送广播*/
-                    String temptime=getTimeDifferenceHour(now,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                    String temptime=getTimeDifferenceHour(str_time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
                     if(!alarmTime.equals(now)) {
                        // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
                         setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
@@ -229,20 +230,21 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 }else if(activityName==1){  //由ContentAdapter跳转到当前活动则进行修改更新数据
                     /*最新修改 2018-3-13 11.20*/
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
-                    String now = sdf.format(new Date());
+                    String nowtemp = sdf.format(new Date());
                     Long currentTime=System.currentTimeMillis();
 
                     ContentValues values=new ContentValues();
                     values.put("msg",text.getText().toString());
                     values.put("alarmTime",alarmTime);
-                    values.put("time",now);
-                    time.setText(now);
+                    values.put("isDone",false);
+                    values.put("time",nowtemp);
+                    time.setText(nowtemp);
 
                     Log.d("alarmContent=",text.getText().toString());
                     Log.d("numFromContentActivity",numFromContentActivity+"");
                     DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
 
-                    String temptime=getTimeDifferenceHour(now,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                    String temptime=getTimeDifferenceHour(nowtemp,alarmTime);  //事件创立时间与事件提醒时间的相差时间
                     setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
                     Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
                 }

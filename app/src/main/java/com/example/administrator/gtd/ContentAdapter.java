@@ -31,9 +31,11 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     private EditText text;
     static class ViewHolder extends RecyclerView.ViewHolder{
         TextView contentName;
+        TextView contentTime;
         CheckBox checkBox;
         public ViewHolder(View view){
             super(view);
+            contentTime=(TextView) view.findViewById(R.id.content_time);
             contentName=(TextView) view.findViewById(R.id.content_name);
             checkBox=(CheckBox) view.findViewById(R.id.checkbox);
         }
@@ -136,6 +138,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         }else{
             holder.contentName.setTextColor(Color.RED);
         }
+
+        holder.contentTime.setText(content.getTime());
 
     }
 
