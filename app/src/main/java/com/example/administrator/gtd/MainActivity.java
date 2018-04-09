@@ -1,10 +1,13 @@
 package com.example.administrator.gtd;
 
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,9 +21,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import org.litepal.LitePal;
@@ -32,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private ContentAdapter adapter;
     private Button selectButton;
     private Button deleteButton;
+    private ArrayList<String> strList=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,8 +160,18 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent=new Intent(MainActivity.this,ContentActivity.class);
                // Log.d("numId",list.get(0).getNum()+"");
                 intent.putExtra("num0",list.size()+1);
+
+                List<Content> newList=DataSupport.order("msg desc").find(Content.class);
+                strList.clear();
+                strList.add("nothing");
+                if (newList.size()>0){
+                    for (int i=0;i<newList.size();i++){
+                        strList.add(newList.get(i).getMsg());
+                    }
+                }
+                intent.putStringArrayListExtra("list",strList);
+
                 startActivityForResult(intent,1);
-                //setReminder(true);
             }
         });
     }
@@ -166,9 +183,8 @@ public class MainActivity extends AppCompatActivity {
         List<Content> newList=DataSupport.order("msg desc").find(Content.class);
         list.addAll(newList);
         adapter.notifyDataSetChanged();
-        Log.d("hh","re");
+        Log.d("MainActivity","resume");
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){

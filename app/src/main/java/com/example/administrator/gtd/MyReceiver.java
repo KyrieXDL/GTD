@@ -21,9 +21,8 @@ public class MyReceiver extends BroadcastReceiver {
         String content=intent.getStringExtra("content1");
         int num=Integer.parseInt(intent.getStringExtra("num1"));
         Log.d("alarmContent=",content);
-        //intent.putExtra("content2",content);
         intent.setClass(context, AlarmActivity.class);
-        PendingIntent pi=PendingIntent.getActivity(context,num,intent,0);
+        PendingIntent pi=PendingIntent.getActivity(context,num,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationManager manager=(NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         // create the instance of Notification
         Notification notification=new NotificationCompat.Builder(context)

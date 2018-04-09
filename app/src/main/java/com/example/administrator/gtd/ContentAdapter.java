@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.DrawableImageViewTarget;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,8 +67,20 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 intent.putExtra("time0",content.getTime());
                 intent.putExtra("alarmtime0",content.getAlarmTime());
                 intent.putExtra("activityName",1);
-
                 intent.putExtra("numFromContentActivity",content.getNum());
+                intent.putExtra("nextContentFromAdapter",content.getNextContent());
+
+                ArrayList<String> strList=new ArrayList<>();
+                List<Content> newList=DataSupport.order("msg desc").find(Content.class);
+                strList.clear();
+                strList.add("nothing");
+                if (newList.size()>0){
+                    for (int i=0;i<newList.size();i++){
+                        strList.add(newList.get(i).getMsg());
+                    }
+                }
+                intent.putStringArrayListExtra("list",strList);
+
                // intent.putExtra("position",position);
                 Log.d("position---",position+"");
                 Log.d("number===",content.getNum()+"");

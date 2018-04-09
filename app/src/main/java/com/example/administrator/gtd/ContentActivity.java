@@ -13,15 +13,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
-
+import android.widget.AdapterView.OnItemSelectedListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -31,18 +35,19 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     private  EditText text;
     private TextView time;
     private String str_time;
-
     private RelativeLayout selectTime;
     private TextView currentTime;
     private CustomDatePicker customDatePicker;
-
     private String alarmTime;
     private int activityName;    //区别是哪个activity
-
     private int number;// 事件的number
     private int numFromContentActivity;
-
     private String now;  ///当前时间
+    private Spinner spinner;
+    private ArrayAdapter<String> adapter;
+    private ArrayList<String> strList=new ArrayList<>();
+
+    private String nextContent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +74,35 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         String timetemp=intent.getStringExtra("alarmtime0");
         number=intent.getIntExtra("num0",0);
         numFromContentActivity=intent.getIntExtra("numFromContentActivity",0);
-        Log.d("numFromContentActivity",numFromContentActivity+"");
+        String nextContentFromAdapter=intent.getStringExtra("nextContentFromAdapter");
 
+        Log.d("numFromContentActivity",numFromContentActivity+"");
         Log.d("ContentActivity===","onCreate");
+
+        spinner=(Spinner) findViewById(R.id.spinner);
+        strList=intent.getStringArrayListExtra("list");
+        adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,strList);
+
+        //设置下拉框的风格
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0, true);
+       // spinner.setVisibility(View.VISIBLE);
+
+        //设置下拉框的选择事件
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+
+                nextContent=(String)spinner.getItemAtPosition(pos);
+                Log.d("nextContent===","233333");
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                nextContent="nothing";
+            }
+        });
 
         activityName=intent.getIntExtra("activityName",0);  //区分是哪个activity
         text.setText(data);
@@ -80,7 +111,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         * intent来自ContentAdapter时*/
         if(activityName==1){
             time.setText(datatime);  //设置事件创立时间
-
+            spinner.setSelection(strList.indexOf(nextContentFromAdapter),true);
         }
         if (activityName==1){
             currentTime.setText(timetemp);  //设置提醒时间
@@ -147,7 +178,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);//3.1以后的版本需要设置Intent.FLAG_INCLUDE_STOPPED_PACKAGES
         intent.putExtra("content1",content); //发送广播的同时，将事件的内容传给receiver，当点击通知时显示在界面上
         intent.putExtra("num1",num+"");  //num为每个事件唯一标号
-        PendingIntent pi= PendingIntent.getBroadcast(ContentActivity.this, num, intent, 0);
+        PendingIntent pi= PendingIntent.getBroadcast(ContentActivity.this, num, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if(b){
             // just use current time as the Alarm time.
@@ -217,6 +248,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     }
                     contentTemp.setNum(number);
                     contentTemp.setDone(false);
+                    contentTemp.setNextContent(nextContent);
                     contentTemp.save();
 
                     /*
@@ -238,6 +270,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     values.put("alarmTime",alarmTime);
                     values.put("isDone",false);
                     values.put("time",nowtemp);
+                    values.put("nextContent",nextContent);
                     time.setText(nowtemp);
 
                     Log.d("alarmContent=",text.getText().toString());
