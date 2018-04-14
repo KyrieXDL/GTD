@@ -74,5 +74,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:headerLayout="@layout/header"
         app:menu="@menu/menu"/>
 </android.support.v4.widget.DrawerLayout>

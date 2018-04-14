@@ -68,6 +68,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         selectTime.setOnClickListener(this);
         currentTime = (TextView) findViewById(R.id.currentTime);  //提醒时间
 
+        //通过intent获取数据
         Intent intent=getIntent();
         String data=intent.getStringExtra("content0");
         String datatime=intent.getStringExtra("time0");    //事件创立时间
@@ -75,9 +76,6 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         number=intent.getIntExtra("num0",0);
         numFromContentActivity=intent.getIntExtra("numFromContentActivity",0);
         String nextContentFromAdapter=intent.getStringExtra("nextContentFromAdapter");
-
-        Log.d("numFromContentActivity",numFromContentActivity+"");
-        Log.d("ContentActivity===","onCreate");
 
         spinner=(Spinner) findViewById(R.id.spinner);
         strList=intent.getStringArrayListExtra("list");
@@ -95,7 +93,6 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
 
                 nextContent=(String)spinner.getItemAtPosition(pos);
-                Log.d("nextContent===","233333");
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {

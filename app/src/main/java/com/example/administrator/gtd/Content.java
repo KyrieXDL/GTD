@@ -14,7 +14,7 @@ public class Content extends DataSupport{
     private boolean isChecked; // 是否选中CheckBox
     private String alarmTime;  //事件的提醒时间
     private int num;
-    private String nextContent;
+    private String nextContent="nothing";
     private boolean isDone;  //判断用户是否已经执行了这件事
 
     public Content(String msg, boolean isShow, boolean isChecked) {
@@ -28,7 +28,7 @@ public class Content extends DataSupport{
             name=msg;
         }
         isDone=false;
-       // nextContent="nothing";
+        nextContent="nothing";
     }
     public String getMsg() {
         return msg;

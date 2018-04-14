@@ -25,7 +25,7 @@
         android:id="@+id/edit_text"
         android:hint="please write down what you need to do"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
+        android:layout_height="330dp"
         android:textSize="24sp"
         android:maxLines="12"/>
     <LinearLayout

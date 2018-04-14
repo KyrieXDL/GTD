@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private Button selectButton;
     private Button deleteButton;
     private ArrayList<String> strList=new ArrayList<>();
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,24 @@ public class MainActivity extends AppCompatActivity {
         //
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
+        navigationView=(NavigationView) findViewById(R.id.nav_view);
+
+        //设置navigationView的item的点击事件
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                //在这里处理item的点击事件
+                switch (item.getItemId()){
+                    case R.id.inbox_item:
+                        Intent intent =new Intent(MainActivity.this,ExpandableListView.class);
+                        startActivity(intent);
+
+                        break;
+
+                }
+                return true;
+            }
+        });
 
         //初始化删除和全选按钮为不可见
         deleteButton=(Button) findViewById(R.id.delete_button);

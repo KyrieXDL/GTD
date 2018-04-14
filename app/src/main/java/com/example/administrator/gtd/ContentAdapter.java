@@ -72,13 +72,27 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
 
                 ArrayList<String> strList=new ArrayList<>();
                 List<Content> newList=DataSupport.order("msg desc").find(Content.class);
-                strList.clear();
+                /*strList.clear();
                 strList.add("nothing");
                 if (newList.size()>0){
                     for (int i=0;i<newList.size();i++){
                         strList.add(newList.get(i).getMsg());
                     }
                 }
+                strList.remove(content.getMsg());  */
+                /*
+                * 在设置nextContent时不能设置为自己
+                * 也不能设置为已经成为其他nextContent的事件*/
+                strList.clear();
+                strList.add("nothing");
+                for(int i=0;i<newList.size();i++){
+                    //未被其他事件设置为nextContent
+                    // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
+                    if ((getPreContent(newList,newList.get(i).getMsg()).equals(""))||(getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
+                        strList.add(newList.get(i).getMsg());
+                    }
+                }
+
                 intent.putStringArrayListExtra("list",strList);
 
                // intent.putExtra("position",position);
@@ -154,6 +168,18 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
 
         holder.contentTime.setText(content.getTime());
 
+    }
+
+    private String getPreContent(List<Content> listTemp,String str){
+        //遍历数据库，返回nextContentdent与str的msg
+        for(int i=0;i<listTemp.size();i++){
+            if(listTemp.get(i).getNextContent()!=null){
+                if (listTemp.get(i).getNextContent().equals(str)){
+                    return listTemp.get(i).getMsg();
+                }
+            }
+        }
+        return "";
     }
 
     @Override
