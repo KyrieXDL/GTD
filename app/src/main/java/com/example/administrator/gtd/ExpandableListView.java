@@ -1,6 +1,7 @@
 package com.example.administrator.gtd;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -114,11 +115,30 @@ public class ExpandableListView extends AppCompatActivity {
                 convertView = LayoutInflater.from(ExpandableListView.this).inflate(R.layout.item_expand_child, parent, false);
                 childViewHolder = new ChildViewHolder();
                 childViewHolder.tvTitle = (TextView) convertView.findViewById(R.id.label_expand_child);
+                childViewHolder.time=(TextView) convertView.findViewById(R.id.expand_time);
                 convertView.setTag(childViewHolder);
             } else {
                 childViewHolder = (ChildViewHolder) convertView.getTag();
             }
             childViewHolder.tvTitle.setText(ChildrenData.get(groupPosition).get(childPosition));
+
+            List<Content> tempList=DataSupport.where("msg=?",ChildrenData.get(groupPosition).get(childPosition)).find(Content.class);
+            final Content content=tempList.get(0);
+
+            childViewHolder.time.setText(content.getAlarmTime());
+            childViewHolder.tvTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(ExpandableListView.this,ContentActivity.class);
+                    intent.putExtra("content0",content.getMsg());
+                    intent.putExtra("time0",content.getTime());
+                    intent.putExtra("alarmtime0",content.getAlarmTime());
+                    intent.putExtra("activityName",1);
+                    intent.putExtra("numFromContentActivity",content.getNum());
+                    intent.putExtra("nextContentFromAdapter",content.getNextContent());
+                    startActivity(intent);
+                }
+            });
             return convertView;
         }
 
@@ -179,5 +199,6 @@ public class ExpandableListView extends AppCompatActivity {
     }
     static class ChildViewHolder {
         TextView tvTitle;
+        TextView time;
     }
 }

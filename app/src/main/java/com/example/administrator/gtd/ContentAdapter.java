@@ -18,7 +18,10 @@ import com.bumptech.glide.request.target.DrawableImageViewTarget;
 
 import org.litepal.crud.DataSupport;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,36 +73,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 intent.putExtra("numFromContentActivity",content.getNum());
                 intent.putExtra("nextContentFromAdapter",content.getNextContent());
 
-                ArrayList<String> strList=new ArrayList<>();
-                List<Content> newList=DataSupport.order("msg desc").find(Content.class);
-                /*strList.clear();
-                strList.add("nothing");
-                if (newList.size()>0){
-                    for (int i=0;i<newList.size();i++){
-                        strList.add(newList.get(i).getMsg());
-                    }
-                }
-                strList.remove(content.getMsg());  */
-                /*
-                * 在设置nextContent时不能设置为自己
-                * 也不能设置为已经成为其他nextContent的事件*/
-                strList.clear();
-                strList.add("nothing");
-                for(int i=0;i<newList.size();i++){
-                    //未被其他事件设置为nextContent
-                    // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
-                    if ((getPreContent(newList,newList.get(i).getMsg()).equals(""))||(getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
-                        strList.add(newList.get(i).getMsg());
-                    }
-                }
-
-                intent.putStringArrayListExtra("list",strList);
-
-               // intent.putExtra("position",position);
-                Log.d("position---",position+"");
-                Log.d("number===",content.getNum()+"");
-                //intent.putExtra("currentTime",System.currentTimeMillis());
-               // intent.putExtra("isExist","1");
                 context.startActivity(intent);
 
                 //text.setText(content.getMsg());
@@ -168,6 +141,24 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
 
         holder.contentTime.setText(content.getTime());
 
+    }
+
+    public String getTimeDifferenceHour(String starTime, String endTime) {
+        String timeString = "";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endTime);
+
+            long diff = parse1.getTime() - parse.getTime();
+            String string = Long.toString(diff);
+            timeString=string;
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return timeString;
     }
 
     private String getPreContent(List<Content> listTemp,String str){

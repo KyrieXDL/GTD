@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class ContentActivity extends AppCompatActivity implements View.OnClickListener{
@@ -47,7 +48,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     private ArrayAdapter<String> adapter;
     private ArrayList<String> strList=new ArrayList<>();
 
-    private String nextContent;
+    private String nextContent="nothing";
+    private Content content;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,9 +78,20 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         number=intent.getIntExtra("num0",0);
         numFromContentActivity=intent.getIntExtra("numFromContentActivity",0);
         String nextContentFromAdapter=intent.getStringExtra("nextContentFromAdapter");
+        activityName=intent.getIntExtra("activityName",0);  //区分是哪个activity
+        text.setText(data);  //设置事件的内容
+
+        //获取content实例 , 并初始化strList数组
+        if (activityName==1){  //1表示当前是有ContentAdapter跳转的
+            List<Content> tempList1=DataSupport.where("msg=?",data).find(Content.class);
+            content=tempList1.get(0);
+            initSpinnerList(content);
+        }else{
+            initStrList(strList);
+        }
 
         spinner=(Spinner) findViewById(R.id.spinner);
-        strList=intent.getStringArrayListExtra("list");
+        //strList=intent.getStringArrayListExtra("list");
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,strList);
 
         //设置下拉框的风格
@@ -91,24 +104,24 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-
                 nextContent=(String)spinner.getItemAtPosition(pos);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
                 nextContent="nothing";
             }
         });
-
-        activityName=intent.getIntExtra("activityName",0);  //区分是哪个activity
-        text.setText(data);
 
         /*
         * intent来自ContentAdapter时*/
         if(activityName==1){
             time.setText(datatime);  //设置事件创立时间
             spinner.setSelection(strList.indexOf(nextContentFromAdapter),true);
+            if (nextContentFromAdapter!=null){
+                nextContent=nextContentFromAdapter;
+            }else{
+                nextContent="nothing";
+            }
         }
         if (activityName==1){
             currentTime.setText(timetemp);  //设置提醒时间
@@ -118,6 +131,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 public void handle(String time) { // 回调接口，获得选中的时间
                     currentTime.setText(time);
                     alarmTime=time;
+
+                    refreshSpinner(currentTime.getText().toString());
                 }
             }, "2010-01-01 00:00", "2050-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
             customDatePicker.showSpecificTime(true); // 显示时和分
@@ -125,6 +140,91 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         }else{
             initDatePicker();   //初始化时间选择控件
         }
+    }
+
+    private void initSpinnerList(Content content){
+        strList.clear();
+        strList.add("nothing");
+        List<Content> newList=DataSupport.order("msg desc").find(Content.class);
+        for(int i=0;i<newList.size();i++){
+            //未被其他事件设置为nextContent
+            // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
+            if ((getPreContent(newList,newList.get(i).getMsg()).equals(""))||(getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
+                String timeDifference=getTimeDifferenceHour(content.getAlarmTime(),newList.get(i).getAlarmTime());
+                //并且若要设置nextcontent，则nextcontent的提醒时间必须要晚于当前的content
+                if (Long.parseLong(timeDifference)>0){
+                    strList.add(newList.get(i).getMsg());
+                }
+            }
+        }
+    }
+
+    private void initStrList(ArrayList<String> strList){
+        strList.clear();
+        strList.add("nothing");
+        List<Content> newList=DataSupport.order("msg desc").find(Content.class);
+        for(int i=0;i<newList.size();i++){
+            //未被其他事件设置为nextContent
+            // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
+            if (getPreContent(newList,newList.get(i).getMsg()).equals("")){
+                strList.add(newList.get(i).getMsg());
+            }
+        }
+    }
+
+    private void refreshSpinnerList(ArrayList<String> list,Content content){
+        list.clear();
+        list.add("nothing");
+        List<Content> newList=DataSupport.order("msg desc").find(Content.class);
+        for(int i=0;i<newList.size();i++){
+            //未被其他事件设置为nextContent
+            // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
+            if ((getPreContent(newList,newList.get(i).getMsg()).equals(""))||(getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
+                list.add(newList.get(i).getMsg());
+            }
+        }
+    }
+
+    private void refreshSpinner(String time){
+        /*
+                    * 在每次设置完提醒时间后，都将更新spinner的adapter*/
+        ArrayList<String> list=new ArrayList<>();
+        list.clear();
+        if (activityName==1){
+            refreshSpinnerList(list,content);
+        }else{
+            initStrList(list);
+        }
+        strList.clear();
+        strList.add("nothing");
+        ArrayList<String> list2=removeEarlyContent(time,list);
+        for (int i=0;i<list2.size();i++){
+            strList.add(list2.get(i));
+            adapter.notifyDataSetChanged();
+        }
+        adapter.notifyDataSetChanged();
+        //获取nextcontent的实例
+       if (!nextContent.equals("nothing")){
+            List<Content> tempList1=DataSupport.where("msg=?",nextContent).find(Content.class);
+            Content content=tempList1.get(0);
+           if(Long.parseLong(getTimeDifferenceHour(time,content.getAlarmTime()))<0){
+               spinner.setSelection(0,true);
+           }else{
+               spinner.setSelection(strList.indexOf(nextContent),true);
+           }
+       }
+    }
+
+    private String getPreContent(List<Content> listTemp,String str){
+        //遍历数据库，返回nextContentdent与str的msg
+        for(int i=0;i<listTemp.size();i++){
+            if(listTemp.get(i).getNextContent()!=null){
+                if (listTemp.get(i).getNextContent().equals(str)){
+                    return listTemp.get(i).getMsg();
+                }
+            }
+        }
+        return "";
     }
 
     @Override
@@ -148,12 +248,28 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             public void handle(String time) { // 回调接口，获得选中的时间
                 currentTime.setText(time);
                 alarmTime=time;
-                Log.d("Check2===","yes");
+                refreshSpinner(currentTime.getText().toString());
             }
         }, "2010-01-01 00:00", "2050-01-01 00:00"); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
         //Log.d("initDatrePicker",alarmTime);
         customDatePicker.showSpecificTime(true); // 显示时和分
         customDatePicker.setIsLoop(true); // 允许循环滚动
+    }
+
+    //nextcontent的数组中删除提醒时间早于当前提醒时间的content
+    public ArrayList<String> removeEarlyContent(String time,ArrayList<String> list1){
+        ArrayList<String> listResult=new ArrayList<>();
+        for (int i=1;i<list1.size();i++){
+            List<Content> tempList=DataSupport.where("msg=?",list1.get(i)).find(Content.class);
+            Content content=tempList.get(0);
+            String timeDifference=getTimeDifferenceHour(time,content.getAlarmTime());  //事件创立时间与事件提醒时间的相差时间
+            if (Long.parseLong(timeDifference)>=0){
+                listResult.add(content.getMsg());
+                //strList.add(content.getMsg());
+                //adapter.notifyDataSetChanged();
+            }
+        }
+        return listResult;
     }
 
     @Override
@@ -261,11 +377,14 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
                     String nowtemp = sdf.format(new Date());
                     Long currentTime=System.currentTimeMillis();
+                    String temptime=getTimeDifferenceHour(nowtemp,alarmTime);  //事件创立时间与事件提醒时间的相差时间
 
                     ContentValues values=new ContentValues();
                     values.put("msg",text.getText().toString());
                     values.put("alarmTime",alarmTime);
-                    values.put("isDone",false);
+                    if (Long.parseLong(temptime)>=0) {
+                        values.put("isDone", false);
+                    }
                     values.put("time",nowtemp);
                     values.put("nextContent",nextContent);
                     time.setText(nowtemp);
@@ -274,8 +393,9 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     Log.d("numFromContentActivity",numFromContentActivity+"");
                     DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
 
-                    String temptime=getTimeDifferenceHour(nowtemp,alarmTime);  //事件创立时间与事件提醒时间的相差时间
-                    setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                    if (Long.parseLong(temptime)>=0){
+                        setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                    }
                     Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
                 }
                 break;
