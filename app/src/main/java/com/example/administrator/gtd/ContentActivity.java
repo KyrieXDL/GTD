@@ -5,9 +5,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Color;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -50,6 +52,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
     private String nextContent="nothing";
     private Content content;
+    private CardView card_text;
+    private int level=1; //content的重要等级
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,15 +64,14 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         setSupportActionBar(toolbar);
         text=(EditText) findViewById(R.id.edit_text);
         time=(TextView) findViewById(R.id.time);
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         //date=new Date(System.currentTimeMillis());
         str_time=sdf.format(new Date());
         time.setText(str_time);
-
         selectTime = (RelativeLayout) findViewById(R.id.selectTime);
         selectTime.setOnClickListener(this);
         currentTime = (TextView) findViewById(R.id.currentTime);  //提醒时间
+        card_text=(CardView) findViewById(R.id.card_text);
 
         //通过intent获取数据
         Intent intent=getIntent();
@@ -86,6 +89,15 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             List<Content> tempList1=DataSupport.where("msg=?",data).find(Content.class);
             content=tempList1.get(0);
             initSpinnerList(content);
+
+            //根据content的level值设置背景色
+            if (content.getLevel()==3){
+                card_text.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
+            }else if (content.getLevel()==2){
+                card_text.setCardBackgroundColor(getResources().getColor(R.color.color5));
+            }else if (content.getLevel()==1){
+                card_text.setCardBackgroundColor(getResources().getColor(R.color.yellow));
+            }
         }else{
             initStrList(strList);
         }
@@ -140,6 +152,37 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         }else{
             initDatePicker();   //初始化时间选择控件
         }
+
+        UnfoldButton f = (UnfoldButton) findViewById(R.id.unfoldButton);
+
+        //第一个是菜单图标  第二个是菜单背景颜色  第三个是点击回调
+        f.addElement(R.mipmap.ic_launcher,R.color.colorAccent, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //这里写菜单的点击事件
+                card_text.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
+                level=3;
+            }
+        });
+        f.addElement(R.mipmap.ic_launcher,R.color.color5, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //这里写菜单的点击事件
+                card_text.setCardBackgroundColor(getResources().getColor(R.color.color5));
+                level=2;
+            }
+        });
+        f.addElement(R.mipmap.ic_launcher,R.color.yellow, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //这里写菜单的点击事件
+                card_text.setCardBackgroundColor(getResources().getColor(R.color.yellow));
+                level=1;
+            }
+        });
+        f.setAngle(90);//这个是展开的总角度  建议取90的倍数
+        f.setmScale(1);//设置弹出缩放的比例  1为不缩放 范围是0—1
+        f.setLength(250);//设置弹出的距离
     }
 
     private void initSpinnerList(Content content){
@@ -362,6 +405,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     contentTemp.setNum(number);
                     contentTemp.setDone(false);
                     contentTemp.setNextContent(nextContent);
+                    contentTemp.setLevel(level);
                     contentTemp.save();
 
                     /*
@@ -387,6 +431,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     }
                     values.put("time",nowtemp);
                     values.put("nextContent",nextContent);
+                    values.put("level",level);
                     time.setText(nowtemp);
 
                     Log.d("alarmContent=",text.getText().toString());

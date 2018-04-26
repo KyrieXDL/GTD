@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,11 +38,13 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         TextView contentName;
         TextView contentTime;
         CheckBox checkBox;
+        CardView cardView;
         public ViewHolder(View view){
             super(view);
             contentTime=(TextView) view.findViewById(R.id.content_time);
             contentName=(TextView) view.findViewById(R.id.content_name);
             checkBox=(CheckBox) view.findViewById(R.id.checkbox);
+            cardView=(CardView) view.findViewById(R.id.card_view);
         }
     }
 
@@ -139,38 +142,17 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
             holder.contentName.setTextColor(Color.RED);
         }
 
+        //根据content的level值设置背景色
+        if (content.getLevel()==3){
+            holder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+        }else if (content.getLevel()==2){
+            holder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.color5));
+        }else if (content.getLevel()==1){
+            holder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.yellow));
+        }
+
         holder.contentTime.setText(content.getTime());
 
-    }
-
-    public String getTimeDifferenceHour(String starTime, String endTime) {
-        String timeString = "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-        try {
-            Date parse = dateFormat.parse(starTime);
-            Date parse1 = dateFormat.parse(endTime);
-
-            long diff = parse1.getTime() - parse.getTime();
-            String string = Long.toString(diff);
-            timeString=string;
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return timeString;
-    }
-
-    private String getPreContent(List<Content> listTemp,String str){
-        //遍历数据库，返回nextContentdent与str的msg
-        for(int i=0;i<listTemp.size();i++){
-            if(listTemp.get(i).getNextContent()!=null){
-                if (listTemp.get(i).getNextContent().equals(str)){
-                    return listTemp.get(i).getMsg();
-                }
-            }
-        }
-        return "";
     }
 
     @Override

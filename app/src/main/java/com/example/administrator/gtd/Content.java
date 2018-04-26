@@ -16,6 +16,7 @@ public class Content extends DataSupport{
     private int num;
     private String nextContent="nothing";
     private boolean isDone;  //判断用户是否已经执行了这件事
+    private int level=1;   //事件的重要等级 ，3为重要，2为较重要，1为一般；初始化为1
 
     public Content(String msg, boolean isShow, boolean isChecked) {
         this.msg = msg;
@@ -29,6 +30,7 @@ public class Content extends DataSupport{
         }
         isDone=false;
         nextContent="nothing";
+        level=1;
     }
     public String getMsg() {
         return msg;
@@ -94,5 +96,13 @@ public class Content extends DataSupport{
 
     public void setNextContent(String nextContent) {
         this.nextContent = nextContent;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

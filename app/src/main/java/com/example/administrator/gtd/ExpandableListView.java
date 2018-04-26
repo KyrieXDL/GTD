@@ -45,6 +45,19 @@ public class ExpandableListView extends AppCompatActivity {
         myExpandableListView.expandGroup(0);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initial();
+        android.widget.ExpandableListView myExpandableListView = (android.widget.ExpandableListView)findViewById(R.id.myExpandableListView);
+        myExpandableListView.setAdapter(new ExpandableAdapter());
+        myExpandableListView.setGroupIndicator(null);
+        myExpandableListView.setDivider(null);
+        //myExpandableListView.setBackgroundResource(R.drawable.background);
+        myExpandableListView.expandGroup(0);
+
+    }
+
     //将数据库中的数据初始化到expandablelistview界面上
     //并根据所设置的属性调整每个group的item，以及顺序
     private void initial(){
@@ -58,6 +71,7 @@ public class ExpandableListView extends AppCompatActivity {
         if(lastContentList.size()>0){
             for(int i=0;i<lastContentList.size();i++){
                 GroupData.add("schedule"+i);
+
                 List<String> Child = new ArrayList<String>();
 
                 Child.add(lastContentList.get(i));
@@ -116,6 +130,7 @@ public class ExpandableListView extends AppCompatActivity {
                 childViewHolder = new ChildViewHolder();
                 childViewHolder.tvTitle = (TextView) convertView.findViewById(R.id.label_expand_child);
                 childViewHolder.time=(TextView) convertView.findViewById(R.id.expand_time);
+                childViewHolder.layout=(LinearLayout) convertView.findViewById(R.id.child_item);
                 convertView.setTag(childViewHolder);
             } else {
                 childViewHolder = (ChildViewHolder) convertView.getTag();
@@ -124,6 +139,17 @@ public class ExpandableListView extends AppCompatActivity {
 
             List<Content> tempList=DataSupport.where("msg=?",ChildrenData.get(groupPosition).get(childPosition)).find(Content.class);
             final Content content=tempList.get(0);
+
+            if (content.getLevel()==3){
+                childViewHolder.tvTitle.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                childViewHolder.time.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            }else if (content.getLevel()==2){
+                childViewHolder.tvTitle.setBackgroundColor(getResources().getColor(R.color.color5));
+                childViewHolder.time.setBackgroundColor(getResources().getColor(R.color.color5));
+            }else if (content.getLevel()==1){
+                childViewHolder.tvTitle.setBackgroundColor(getResources().getColor(R.color.yellow));
+                childViewHolder.time.setBackgroundColor(getResources().getColor(R.color.yellow));
+            }
 
             childViewHolder.time.setText(content.getAlarmTime());
             childViewHolder.tvTitle.setOnClickListener(new View.OnClickListener() {
@@ -200,5 +226,6 @@ public class ExpandableListView extends AppCompatActivity {
     static class ChildViewHolder {
         TextView tvTitle;
         TextView time;
+        LinearLayout layout;
     }
 }
