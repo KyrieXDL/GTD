@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/mainBackground">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/right"
@@ -26,6 +27,7 @@
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v7.widget.RecyclerView
+            android:background="?attr/mainBackground"
             android:id="@+id/conten_list"
             android:layout_width="match_parent"
             android:layout_height="550dp"
@@ -43,7 +45,7 @@
                android:layout_height="wrap_content"
                android:layout_gravity="bottom|end"
                android:layout_margin="16dp"
-               android:src="@drawable/new_1"
+               android:src="@drawable/add"
                app:elevation="8dp"/>
            <LinearLayout
                android:layout_width="match_parent"
@@ -56,14 +58,14 @@
                    android:layout_height="wrap_content"
                    android:layout_weight="1"
                    android:layout_gravity="bottom"
-                   android:text="全选"/>
+                   android:text="@string/select_all"/>
                <Button
                    android:id="@+id/delete_button"
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
                    android:layout_weight="1"
                    android:layout_gravity="bottom|end"
-                   android:text="删除"/>
+                   android:text="@string/delete"/>
            </LinearLayout>
 
        </LinearLayout>
@@ -75,5 +77,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/header"
-        app:menu="@menu/menu"/>
+        app:menu="@menu/menu"
+        app:itemTextColor="@color/itemColor"
+        android:background="?attr/mainBackground"
+        />
 </android.support.v4.widget.DrawerLayout>

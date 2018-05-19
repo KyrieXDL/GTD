@@ -14,5 +14,22 @@
     <color name="color5">#57C5E8</color>
     <color name="green">#9b4</color>
     <color name="yellow">#FFFFB9</color>
-    <color name="background2">#9b414141</color>
+    <color name="background2">#00000000</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="textColor_night">#873324</color>
+    <color name="itemColor">#333333</color>
+
+    <color name="colorPrimary_night">#3b3b3b</color>
+    <color name="colorPrimaryDark_night">#383838</color>
+    <color name="colorAccent_night">#a72b55</color>
+    <color name="textColor_night_night">#FFFFFF</color>
+    <color name="backgroundColor_night">#3b3b3b</color>
+    <color name="yellow_night">#B8860B</color>
+    <color name="color2_night">#8B8682</color>
+    <color name="color1_night">#8F8F8F</color>
+    <color name="color4_night">#666666</color>
+    <color name="color5_night">#36648B</color>
+    <color name="itemColor_night">#FFFFFF</color>
+    <color name="background_night">#8F8F8F</color>
 </resources>

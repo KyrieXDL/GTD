@@ -12,4 +12,40 @@
     <string name="current_date">当前日期</string>
     <string name="select_time">选择时间</string>
     <string name="alarm_time">提醒时间</string>
+
+    <string name="select_content">选择事件</string>
+
+    <string name="edit">编辑</string>
+    <string name="select_all">全选</string>
+    <string name="not_select_all">全不选</string>
+    <string name="delete">删除</string>
+
+    <string name="schedule">日程</string>
+
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="alarm">提醒!!!</string>
+    <string name="areYouSure">确定要删除已选中的事件吗？</string>
+    <string name="areYouSureToQuit">确定不保存修改吗？</string>
+    <string name="alarmContentIsNull">内容不能为空!!!</string>
+    <string name="cannotSelectNothing">你还没选择要删除的事情!!!</string>
+
+    <string name="inbox">整理</string>
+    <string name="set">设置</string>
+    <string name="review">回顾</string>
+    <string name="recycle_bin">回收站</string>
+    <string name="night_day_mode">夜间/日间模式</string>
+    <string name="language">中文/英文切换</string>
+
+    <string name="inbox_en">INBOX</string>
+    <string name="set_en">SET</string>
+    <string name="review_en">REVIEW</string>
+    <string name="recycle_bin_en">RECYCLE_BIN</string>
+    <string name="night_day_mode_en">NIGHT/DAY_MODE</string>
+    <string name="language_en">ZH/EN_CHANGE</string>
+
+    <string name="edit_en">EDIT</string>
+    <string name="select_all_en">SELECT_ALL</string>
+    <string name="not_select_all_en">NOT_SELECT_ALL</string>
+    <string name="delete_en">DELETE</string>
 </resources>

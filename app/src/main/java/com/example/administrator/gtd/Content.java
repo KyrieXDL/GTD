@@ -17,6 +17,7 @@ public class Content extends DataSupport{
     private String nextContent="nothing";
     private boolean isDone;  //判断用户是否已经执行了这件事
     private int level=1;   //事件的重要等级 ，3为重要，2为较重要，1为一般；初始化为1
+    private int night_mode=0;  //当前的主题模式，0为日间模式，1为夜间模式
 
     public Content(String msg, boolean isShow, boolean isChecked) {
         this.msg = msg;
@@ -104,5 +105,13 @@ public class Content extends DataSupport{
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public int getNight_mode() {
+        return night_mode;
+    }
+
+    public void setNight_mode(int night_mode) {
+        this.night_mode = night_mode;
     }
 }

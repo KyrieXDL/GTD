@@ -8,11 +8,6 @@
         android:title="save"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/delete"
-        android:icon="@drawable/delete"
-        android:title="delete"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/backup"
         android:icon="@drawable/backup"
         android:title="Backup"

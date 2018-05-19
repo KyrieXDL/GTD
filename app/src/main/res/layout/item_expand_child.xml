@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/expand_time"
-        android:background="#FFFFC9"
+        android:background="?attr/cardColor"
         android:textSize="15sp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -21,18 +21,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="#FFFFC9"
+        android:background="?attr/cardColor"
         android:paddingLeft="20dp"
         android:textSize="25sp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"/>
-    <ImageView
-        android:id="@+id/iv_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimaryDark"
+    <View
+        android:layout_height="1px"
+        android:layout_width="fill_parent"
+        android:background="#333333"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentTop="true"/>
+        android:layout_marginRight="10dp"/>
 
 </LinearLayout>

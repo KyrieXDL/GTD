@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancle">CANCEL</string>
+    <string name="title">PLEASE_SELECT_TIME</string>
+    <string name="commit">COMFIRM</string>
+    <string name="year">Y</string>
+    <string name="month">M</string>
+    <string name="day">D</string>
+    <string name="hour">H</string>
+    <string name="minute">M</string>
+    <string name="select_date">SELECT_DATE</string>
+    <string name="current_date">CURRENT_DATE</string>
+    <string name="select_time">SELECT_TIME</string>
+    <string name="alarm_time">ALARM_TIME</string>
+
+    <string name="select_content">SELECT_CONTENT</string>
+
+    <string name="edit">EDIT</string>
+    <string name="select_all">SELECT_ALL</string>
+    <string name="not_select_all">NOT_SELECT_ALL</string>
+    <string name="delete">DELETE</string>
+
+    <string name="schedule">schedule</string>
+
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="alarm">Alarm!!!</string>
+    <string name="areYouSure">Are you sure to delete these contens chosen？</string>
+    <string name="areYouSureToQuit">Are you sure to quit without saving？</string>
+    <string name="alarmContentIsNull">The content cannot be nothing!!!</string>
+    <string name="cannotSelectNothing">You have not selected anthing to delete!!!</string>
+
+    <string name="inbox">INBOX</string>
+    <string name="set">SET</string>
+    <string name="review">REVIEW</string>
+    <string name="recycle_bin">RECYCLE_BIN</string>
+    <string name="night_day_mode">NIGHT/DAY_MODE</string>
+    <string name="language">ZH/EN_CHANGE</string>
+</resources>

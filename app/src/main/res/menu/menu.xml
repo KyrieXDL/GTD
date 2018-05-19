@@ -6,19 +6,40 @@
         android:id="@+id/group1">
         <item
             android:id="@+id/inbox_item"
-            android:title="INBOX"/>
+            android:title="@string/inbox" />
         <item
             android:id="@+id/set_item"
-            android:title="SET"/>
+            android:title="@string/set"/>
         <item
             android:id="@+id/review_item"
-            android:title="REVIEW"/>
+            android:title="@string/review"/>
     </group>
     <group
         android:checkableBehavior="single"
         android:id="@+id/group2">
         <item
             android:id="@+id/recycle_bin"
-            android:title="RECYCLE_BIN"/>
+            android:title="@string/recycle_bin"/>
     </group>
+
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/group3">
+        <item
+            android:id="@+id/mode"
+            android:title="@string/night_day_mode" >
+        </item>
+
+    </group>
+
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/group4">
+        <item
+            android:id="@+id/language"
+            android:title="@string/language" >
+        </item>
+
+    </group>
+
 </menu>

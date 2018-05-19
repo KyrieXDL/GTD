@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_save"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/dialog_shape">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/alarm"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textSize="15sp"
+        android:text="@string/alarmContentIsNull"
+        android:gravity="center"/>
+
+    <View
+        android:layout_height="1px"
+        android:layout_width="fill_parent"
+        android:background="#333333"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"/>
+
+    <TextView
+        android:id="@+id/yes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textSize="17sp"
+        android:text="@string/yes"
+        android:gravity="center"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

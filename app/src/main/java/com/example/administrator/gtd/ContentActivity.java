@@ -2,22 +2,35 @@ package com.example.administrator.gtd;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,7 +46,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ContentActivity extends AppCompatActivity implements View.OnClickListener{
+public class ContentActivity extends AppCompatActivity implements View.OnClickListener, ThemeManager.OnThemeChangeListener{
 
     private  EditText text;
     private TextView time;
@@ -50,14 +63,36 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     private ArrayAdapter<String> adapter;
     private ArrayList<String> strList=new ArrayList<>();
 
+    /*
+    * 如果当前是修改事件而不是新建事件
+    * data，timetemp，nextContentFromAdapter用于存放数据（未修改前）*/
+    private String data;  //事件的内容
+    private String timetemp;  //事件的提醒时间
+    private String nextContentFromAdapter;  //事件的nextContent
+
     private String nextContent="nothing";
     private Content content;
     private CardView card_text;
+    private CardView card_set;
     private int level=1; //content的重要等级
+    private int isSave=0;
+
+    private UnfoldButton unfoldButton;
+    private ActionBar supportActionBar;
+    private LinearLayout linearLayout;
+    private LinearLayout selectNextContent;
+    private LinearLayout selectNextContent_hint;
+    private LinearLayout selectTime_hint;
+    private LinearLayout dialog_save;
+    private RelativeLayout datePickerView;
+
+    private int mode=0;  //当前主题模式，0为为日间模式，1为夜间模式
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content);
+        ThemeManager.registerThemeChangeListener(this);
+
         /*
         * 初始化控件*/
         Toolbar toolbar=(Toolbar) findViewById(R.id.contentToolBar);
@@ -72,32 +107,44 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         selectTime.setOnClickListener(this);
         currentTime = (TextView) findViewById(R.id.currentTime);  //提醒时间
         card_text=(CardView) findViewById(R.id.card_text);
+        card_set=(CardView) findViewById(R.id.card_set);
+        linearLayout=(LinearLayout) findViewById(R.id.content_background);
+        selectNextContent=(LinearLayout) findViewById(R.id.view4);
+        unfoldButton = (UnfoldButton) findViewById(R.id.unfoldButton);
+        selectNextContent_hint=(LinearLayout) findViewById(R.id.view3);
+        selectTime_hint=(LinearLayout) findViewById(R.id.view2);
+        supportActionBar = getSupportActionBar();
+
+        View view_save = View.inflate(this, R.layout.dialog_save, null);
+        dialog_save=(LinearLayout) view_save.findViewById(R.id.dialog_save);
 
         //通过intent获取数据
         Intent intent=getIntent();
-        String data=intent.getStringExtra("content0");
+        data=intent.getStringExtra("content0");
         String datatime=intent.getStringExtra("time0");    //事件创立时间
-        String timetemp=intent.getStringExtra("alarmtime0");
+        timetemp=intent.getStringExtra("alarmtime0");
         number=intent.getIntExtra("num0",0);
         numFromContentActivity=intent.getIntExtra("numFromContentActivity",0);
-        String nextContentFromAdapter=intent.getStringExtra("nextContentFromAdapter");
+        nextContentFromAdapter=intent.getStringExtra("nextContentFromAdapter");
         activityName=intent.getIntExtra("activityName",0);  //区分是哪个activity
         text.setText(data);  //设置事件的内容
+        mode=intent.getIntExtra("mode",0);
+
+        if (mode==1){
+            Toast.makeText(this, "night_mode", Toast.LENGTH_SHORT).show();
+            ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+        }else{
+            Toast.makeText(this, "day_mode", Toast.LENGTH_SHORT).show();
+            ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
+        }
 
         //获取content实例 , 并初始化strList数组
         if (activityName==1){  //1表示当前是有ContentAdapter跳转的
             List<Content> tempList1=DataSupport.where("msg=?",data).find(Content.class);
             content=tempList1.get(0);
             initSpinnerList(content);
+            level=content.getLevel();   //当前为查看事件时，level复制为当前事件已设置的level
 
-            //根据content的level值设置背景色
-            if (content.getLevel()==3){
-                card_text.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
-            }else if (content.getLevel()==2){
-                card_text.setCardBackgroundColor(getResources().getColor(R.color.color5));
-            }else if (content.getLevel()==1){
-                card_text.setCardBackgroundColor(getResources().getColor(R.color.yellow));
-            }
         }else{
             initStrList(strList);
         }
@@ -109,7 +156,6 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         //设置下拉框的风格
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(0, true);
        // spinner.setVisibility(View.VISIBLE);
 
         //设置下拉框的选择事件
@@ -134,6 +180,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             }else{
                 nextContent="nothing";
             }
+        }else{
+            spinner.setSelection(0, true);
         }
         if (activityName==1){
             currentTime.setText(timetemp);  //设置提醒时间
@@ -153,37 +201,98 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
             initDatePicker();   //初始化时间选择控件
         }
 
-        UnfoldButton f = (UnfoldButton) findViewById(R.id.unfoldButton);
-
         //第一个是菜单图标  第二个是菜单背景颜色  第三个是点击回调
-        f.addElement(R.mipmap.ic_launcher,R.color.colorAccent, new View.OnClickListener() {
+        unfoldButton.addElement(R.mipmap.ic_launcher,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //这里写菜单的点击事件
-                card_text.setCardBackgroundColor(getResources().getColor(R.color.colorAccent));
+                card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent)));
+                card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent)));
                 level=3;
             }
         });
-        f.addElement(R.mipmap.ic_launcher,R.color.color5, new View.OnClickListener() {
+        unfoldButton.addElement(R.mipmap.ic_launcher,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //这里写菜单的点击事件
-                card_text.setCardBackgroundColor(getResources().getColor(R.color.color5));
+                card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5)));
+                card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5)));
                 level=2;
             }
         });
-        f.addElement(R.mipmap.ic_launcher,R.color.yellow, new View.OnClickListener() {
+        unfoldButton.addElement(R.mipmap.ic_launcher,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //这里写菜单的点击事件
-                card_text.setCardBackgroundColor(getResources().getColor(R.color.yellow));
+                card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow)));
+                card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow)));
                 level=1;
             }
         });
-        f.setAngle(90);//这个是展开的总角度  建议取90的倍数
-        f.setmScale(1);//设置弹出缩放的比例  1为不缩放 范围是0—1
-        f.setLength(250);//设置弹出的距离
+        unfoldButton.setAngle(90);//这个是展开的总角度  建议取90的倍数
+        unfoldButton.setmScale(1);//设置弹出缩放的比例  1为不缩放 范围是0—1
+        unfoldButton.setLength(250);//设置弹出的距离
+
+        //初始化主题
+        initTheme();
     }
+
+    @Override
+    public void onThemeChanged() {
+        initTheme();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ThemeManager.unregisterThemeChangeListener(this);
+    }
+
+    public void initTheme(){
+        // 设置标题栏颜色
+        if(supportActionBar != null){
+            supportActionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorPrimary))));
+        }
+        // 设置状态栏颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.setStatusBarColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorPrimary)));
+        }
+
+        unfoldButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent))));
+
+        //只有当不是新建状态时才根据level设置content的背景色，否则都初始化为淡黄色
+        if (activityName==1) {
+            //根据content的level值设置背景色
+            if (content.getLevel() == 3) {
+                card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent)));
+                card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent)));
+            } else if (content.getLevel() == 2) {
+                card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5)));
+                card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5)));
+
+            } else if (content.getLevel() == 1) {
+                card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow)));
+                card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow)));
+            }
+        }else{
+            card_text.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow)));
+            card_set.setCardBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow)));
+        }
+
+
+        linearLayout.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.backgroundColor)));
+        selectTime.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color2)));
+        spinner.setPopupBackgroundResource(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.background));
+        selectNextContent.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color2)));
+        selectNextContent_hint.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color1)));
+        selectTime_hint.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color1)));
+
+        GradientDrawable p = (GradientDrawable) dialog_save.getBackground();
+        p.setColor(getResources().getColor(ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.backgroundColor)));
+
+    }
+
 
     private void initSpinnerList(Content content){
         strList.clear();
@@ -192,8 +301,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         for(int i=0;i<newList.size();i++){
             //未被其他事件设置为nextContent
             // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
-            if ((getPreContent(newList,newList.get(i).getMsg()).equals(""))||(getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
-                String timeDifference=getTimeDifferenceHour(content.getAlarmTime(),newList.get(i).getAlarmTime());
+            if ((ContentHelper.getPreContent(newList,newList.get(i).getMsg()).equals(""))||(ContentHelper.getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
+                String timeDifference=ContentHelper.getTimeBetweenContents(content.getAlarmTime(),newList.get(i).getAlarmTime());
                 //并且若要设置nextcontent，则nextcontent的提醒时间必须要晚于当前的content
                 if (Long.parseLong(timeDifference)>0){
                     strList.add(newList.get(i).getMsg());
@@ -209,7 +318,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         for(int i=0;i<newList.size();i++){
             //未被其他事件设置为nextContent
             // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
-            if (getPreContent(newList,newList.get(i).getMsg()).equals("")){
+            if (ContentHelper.getPreContent(newList,newList.get(i).getMsg()).equals("")){
                 strList.add(newList.get(i).getMsg());
             }
         }
@@ -222,7 +331,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         for(int i=0;i<newList.size();i++){
             //未被其他事件设置为nextContent
             // 或则是当前事件的nextContent的事件可以被添加到strList，并传给ContentActivity
-            if ((getPreContent(newList,newList.get(i).getMsg()).equals(""))||(getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
+            if ((ContentHelper.getPreContent(newList,newList.get(i).getMsg()).equals(""))||(ContentHelper.getPreContent(newList,newList.get(i).getMsg()).equals(content.getMsg()))){
                 list.add(newList.get(i).getMsg());
             }
         }
@@ -240,7 +349,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         }
         strList.clear();
         strList.add("nothing");
-        ArrayList<String> list2=removeEarlyContent(time,list);
+        ArrayList<String> list2=ContentHelper.removeEarlyContent(time,list);
         for (int i=0;i<list2.size();i++){
             strList.add(list2.get(i));
             adapter.notifyDataSetChanged();
@@ -250,24 +359,12 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
        if (!nextContent.equals("nothing")){
             List<Content> tempList1=DataSupport.where("msg=?",nextContent).find(Content.class);
             Content content=tempList1.get(0);
-           if(Long.parseLong(getTimeDifferenceHour(time,content.getAlarmTime()))<0){
+           if(Long.parseLong(ContentHelper.getTimeBetweenContents(time,content.getAlarmTime()))<0){
                spinner.setSelection(0,true);
            }else{
                spinner.setSelection(strList.indexOf(nextContent),true);
            }
        }
-    }
-
-    private String getPreContent(List<Content> listTemp,String str){
-        //遍历数据库，返回nextContentdent与str的msg
-        for(int i=0;i<listTemp.size();i++){
-            if(listTemp.get(i).getNextContent()!=null){
-                if (listTemp.get(i).getNextContent().equals(str)){
-                    return listTemp.get(i).getMsg();
-                }
-            }
-        }
-        return "";
     }
 
     @Override
@@ -281,7 +378,6 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void initDatePicker() {
-        Log.d("Check===","yes");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         now = sdf.format(new Date());
         currentTime.setText(now);
@@ -299,32 +395,12 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         customDatePicker.setIsLoop(true); // 允许循环滚动
     }
 
-    //nextcontent的数组中删除提醒时间早于当前提醒时间的content
-    public ArrayList<String> removeEarlyContent(String time,ArrayList<String> list1){
-        ArrayList<String> listResult=new ArrayList<>();
-        for (int i=1;i<list1.size();i++){
-            List<Content> tempList=DataSupport.where("msg=?",list1.get(i)).find(Content.class);
-            Content content=tempList.get(0);
-            String timeDifference=getTimeDifferenceHour(time,content.getAlarmTime());  //事件创立时间与事件提醒时间的相差时间
-            if (Long.parseLong(timeDifference)>=0){
-                listResult.add(content.getMsg());
-                //strList.add(content.getMsg());
-                //adapter.notifyDataSetChanged();
-            }
-        }
-        return listResult;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar,menu);
         return true;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
     public void setReminder(boolean b,Long time,String content,int num) {
         // get the AlarmManager instance
@@ -349,25 +425,6 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    //最新修改
-    public String getTimeDifferenceHour(String starTime, String endTime) {
-        String timeString = "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-        try {
-            Date parse = dateFormat.parse(starTime);
-            Date parse1 = dateFormat.parse(endTime);
-
-            long diff = parse1.getTime() - parse.getTime();
-            String string = Long.toString(diff);
-            timeString=string;
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return timeString;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -376,8 +433,31 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(intent);*/
                /*返回到主界面
                * */
-               finish();
-                break;
+               //如果当前是修改事件，则判断是否有数据被修改
+               if (activityName==1){
+                   if((!data.equals(text.getText().toString())||(!timetemp.equals(alarmTime)))||(!nextContentFromAdapter.equals(nextContent))
+                           ||(level!=content.getLevel())){
+                       quitAlarm();
+                   }else{
+                       finish();
+                   }
+               }else{
+               //如果当前为新建事件
+                   //如果用户已经输入内容
+                   if(!text.getText().toString().equals("")){
+                       //如果用户没有保存，则进行询问是否要退出
+                       if (isSave!=1){
+                           quitAlarm();
+                       }else{
+                       //如果用户已经保存，则直接退出
+                           finish();
+                       }
+                   //如果用户新建事件时没有输入内容则直接退出
+                   }else{
+                       finish();
+                   }
+               }
+               break;
             case R.id.save:
                 /*
                 * 由MainActivity跳转到当前活动，则进行保存数据*/
@@ -390,38 +470,45 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
                     //String now = sdf.format(new Date());
 
-                    //将数据保存到数据库中，并在主界面添加事件
-                    Content contentTemp=new Content("",false,false);
-                    contentTemp.setMsg(text.getText().toString());
-                    contentTemp.setTime(now);
+                    //当用户所输入的内容不为空时，执行保存操作
+                    if (!text.getText().toString().equals("")){
+                        //将数据保存到数据库中，并在主界面添加事件
+                        Content contentTemp=new Content("",false,false);
+                        contentTemp.setMsg(text.getText().toString());
+                        contentTemp.setTime(now);
 
-                    Log.d("nowAlarmTime",now);
-                    Log.d("setAlarmTime",alarmTime);
-                    if (!alarmTime.equals(now)){
-                    contentTemp.setAlarmTime(alarmTime);}
-                    else{
-                        contentTemp.setAlarmTime(now);  //如果未设置提醒时间则初始化为当前事件
-                    }
-                    contentTemp.setNum(number);
-                    contentTemp.setDone(false);
-                    contentTemp.setNextContent(nextContent);
-                    contentTemp.setLevel(level);
-                    contentTemp.save();
+                        if (!alarmTime.equals(now)){
+                            contentTemp.setAlarmTime(alarmTime);}
+                        else{
+                            contentTemp.setAlarmTime(now);  //如果未设置提醒时间则初始化为当前事件
+                        }
+                        contentTemp.setNum(number);
+                        contentTemp.setDone(false);
+                        contentTemp.setNextContent(nextContent);
+                        contentTemp.setLevel(level);
+                        contentTemp.save();
 
                     /*
                     * 如果用户在创立事件时设置提醒时间，则发送广播*/
-                    String temptime=getTimeDifferenceHour(str_time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
-                    if(!alarmTime.equals(now)) {
-                       // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
-                        setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                        String temptime=ContentHelper.getTimeBetweenContents(str_time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                        if(!alarmTime.equals(now)) {
+                            // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
+                            setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                        }
+                        Toast.makeText(ContentActivity.this,"保存成功",Toast.LENGTH_SHORT).show();
+
+                        //
+                        isSave=1;
+                    }else{
+                    //当用户所输入的内容为空提醒用户，但不保存
+                        saveAlarm();
                     }
-                    Toast.makeText(ContentActivity.this,"保存成功",Toast.LENGTH_SHORT).show();
                 }else if(activityName==1){  //由ContentAdapter跳转到当前活动则进行修改更新数据
                     /*最新修改 2018-3-13 11.20*/
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
                     String nowtemp = sdf.format(new Date());
                     Long currentTime=System.currentTimeMillis();
-                    String temptime=getTimeDifferenceHour(nowtemp,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                    String temptime=ContentHelper.getTimeBetweenContents(nowtemp,alarmTime);  //事件创立时间与事件提醒时间的相差时间
 
                     ContentValues values=new ContentValues();
                     values.put("msg",text.getText().toString());
@@ -434,6 +521,12 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     values.put("level",level);
                     time.setText(nowtemp);
 
+                    //如果已经保存修改，则更新数据
+                    data=text.getText().toString();
+                    timetemp=alarmTime;
+                    nextContentFromAdapter=nextContent;
+                    level=content.getLevel();
+
                     Log.d("alarmContent=",text.getText().toString());
                     Log.d("numFromContentActivity",numFromContentActivity+"");
                     DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
@@ -444,13 +537,68 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.delete:
-                /*
-                * 删除当前事件*/
-                break;
+
             default:
 
         }
         return true;
+    }
+
+    private void quitAlarm() {
+        final Dialog dialog = new Dialog(this, R.style.NormalDialogStyle);
+        View view = View.inflate(this, R.layout.dialog_normal, null);
+        TextView cancel = (TextView) view.findViewById(R.id.cancel);
+        TextView confirm = (TextView) view.findViewById(R.id.confirm);
+        TextView alarmContent = (TextView) view.findViewById(R.id.alarm_content);
+        alarmContent.setText(getResources().getText(R.string.areYouSureToQuit));
+        dialog.setContentView(view);
+        //使得点击对话框外部不消失对话框
+        dialog.setCanceledOnTouchOutside(false);
+        //设置对话框的大小
+        view.setMinimumHeight((int) (ScreenSizeUtils.getInstance(this).getScreenHeight() * 0.23f));
+        Window dialogWindow = dialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = (int) (ScreenSizeUtils.getInstance(this).getScreenWidth() * 0.75f);
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(lp);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    private void saveAlarm() {
+        final Dialog dialog = new Dialog(this, R.style.NormalDialogStyle);
+        View view = View.inflate(this, R.layout.dialog_save, null);
+        TextView confirm = (TextView) view.findViewById(R.id.yes);
+        dialog.setContentView(view);
+        //使得点击对话框外部不消失对话框
+        dialog.setCanceledOnTouchOutside(false);
+        //设置对话框的大小
+        view.setMinimumHeight((int) (ScreenSizeUtils.getInstance(this).getScreenHeight() * 0.23f));
+        Window dialogWindow = dialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = (int) (ScreenSizeUtils.getInstance(this).getScreenWidth() * 0.75f);
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(lp);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 }
