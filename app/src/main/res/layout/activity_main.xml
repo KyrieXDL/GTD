@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="?attr/mainBackground">
 
+
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/right"
         android:layout_width="match_parent"
@@ -71,6 +72,23 @@
        </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 
+    <com.example.administrator.gtd.animator.MoonAnim1
+        android:id="@+id/moonAnim1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <com.example.administrator.gtd.animator.MoonAnim2
+        android:id="@+id/moonAnim2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <com.example.administrator.gtd.animator.SunAnim
+        android:id="@+id/sunAnim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <com.example.administrator.gtd.animator.SunAnim_Lines
+        android:id="@+id/sunAnim_Lines"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
@@ -81,4 +99,5 @@
         app:itemTextColor="@color/itemColor"
         android:background="?attr/mainBackground"
         />
+
 </android.support.v4.widget.DrawerLayout>

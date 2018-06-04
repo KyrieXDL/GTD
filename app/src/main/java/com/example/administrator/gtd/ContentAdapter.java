@@ -150,8 +150,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         content.setNum(position);
 
         ContentValues values=new ContentValues();
+        int id=content.getNum();
         values.put("num",position);
-        DataSupport.updateAll(Content.class,values,"msg=?",content.getMsg());
+        DataSupport.updateAll(Content.class,values,"num=?",content.getNum()+"");
 
         if(content.isDone()){
             holder.contentName.setTextColor(Color.BLACK);

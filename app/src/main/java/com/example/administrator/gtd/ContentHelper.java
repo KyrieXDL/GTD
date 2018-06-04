@@ -22,11 +22,11 @@ public class ContentHelper {
         }
     }
 
-    //返回下一件事等于str的content的msg
+    //返回下一件事等于str的content的msg,即str的前一件事
     public static  String getPreContent(List<Content> listTemp,String str){
         //遍历数据库，返回nextContentdent与str的msg
         for(int i=0;i<listTemp.size();i++){
-            if(listTemp.get(i).getNextContent()!=null){
+            if((listTemp.get(i).getNextContent()!=null)&&(!listTemp.get(i).getNextContent().equals("nothing"))){
                 if (listTemp.get(i).getNextContent().equals(str)){
                     return listTemp.get(i).getMsg();
                 }

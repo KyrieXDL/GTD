@@ -22,6 +22,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -131,10 +132,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         mode=intent.getIntExtra("mode",0);
 
         if (mode==1){
-            Toast.makeText(this, "night_mode", Toast.LENGTH_SHORT).show();
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
         }else{
-            Toast.makeText(this, "day_mode", Toast.LENGTH_SHORT).show();
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
         }
 
@@ -426,6 +425,39 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //判断用户是否点击了“返回键”
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //与上次点击返回键时刻作差
+            //如果当前是修改事件，则判断是否有数据被修改
+            if (activityName==1){
+                if((!data.equals(text.getText().toString())||(!timetemp.equals(alarmTime)))||(!nextContentFromAdapter.equals(nextContent))
+                        ||(level!=content.getLevel())){
+                    quitAlarm();
+                }else{
+                    finish();
+                }
+            }else{
+                //如果当前为新建事件
+                //如果用户已经输入内容
+                if(!text.getText().toString().equals("")){
+                    //如果用户没有保存，则进行询问是否要退出
+                    if (isSave!=1){
+                        quitAlarm();
+                    }else{
+                        //如果用户已经保存，则直接退出
+                        finish();
+                    }
+                    //如果用户新建事件时没有输入内容则直接退出
+                }else{
+                    finish();
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.backup:
@@ -499,6 +531,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
                         //
                         isSave=1;
+                        finish();
                     }else{
                     //当用户所输入的内容为空提醒用户，但不保存
                         saveAlarm();
@@ -535,6 +568,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                         setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
                     }
                     Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 break;
 

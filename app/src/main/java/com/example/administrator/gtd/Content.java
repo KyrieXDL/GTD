@@ -14,6 +14,7 @@ public class Content extends DataSupport{
     private boolean isChecked; // 是否选中CheckBox
     private String alarmTime;  //事件的提醒时间
     private int num;
+    private int id;
     private String nextContent="nothing";
     private boolean isDone;  //判断用户是否已经执行了这件事
     private int level=1;   //事件的重要等级 ，3为重要，2为较重要，1为一般；初始化为1
@@ -81,6 +82,15 @@ public class Content extends DataSupport{
 
     public void setNum(int num) {
         this.num = num;
+        this.id=num;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean isDone() {

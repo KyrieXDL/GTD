@@ -1,6 +1,10 @@
 package com.example.administrator.gtd;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -19,6 +23,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -37,18 +44,27 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.administrator.gtd.animator.Background_anim;
+import com.example.administrator.gtd.animator.MoonAnim1;
+import com.example.administrator.gtd.animator.MoonAnim2;
+import com.example.administrator.gtd.animator.SunAnim;
+import com.example.administrator.gtd.animator.SunAnim_Lines;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
@@ -81,6 +97,16 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
     private SharedPreferences sharedPreferences;
 
+    //动画
+    private SunAnim sunAnim;
+    private SunAnim_Lines sunAnim_lines;
+    private MoonAnim1 moonAnim1;
+    private MoonAnim2 moonAnim2;
+    private CoordinatorLayout coordinatorLayout;
+
+    private long mExitTime;
+    private int temp=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,8 +125,11 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         recyclerView.setAdapter(adapter);
         sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
 
-        // 默认设置为日间模式
-        //ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
+        sunAnim=(SunAnim) findViewById(R.id.sunAnim);
+        sunAnim_lines=(SunAnim_Lines) findViewById(R.id.sunAnim_Lines);
+        moonAnim1=(MoonAnim1) findViewById(R.id.moonAnim1);
+        moonAnim2=(MoonAnim2) findViewById(R.id.moonAnim2);
+        coordinatorLayout=(CoordinatorLayout) findViewById(R.id.right);
 
         //
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolBar);
@@ -129,11 +158,17 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 //在这里处理item的点击事件
                 switch (item.getItemId()){
                     case R.id.inbox_item:
-                        Intent intent =new Intent(MainActivity.this,ExpandableListView.class);
+                        Intent intent;
+                        if (list.size()>0) {
+                            intent = new Intent(MainActivity.this, ExpandableListView.class);
+                            int mode0=sharedPreferences.getInt("mode",0);
+                            intent.putExtra("mode",mode0);
+                            startActivity(intent);
+                        }else{
+                            intent = new Intent(MainActivity.this, EmptyExpandableListActivity.class);
+                            startActivity(intent);
+                        }
                         //SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
-                        int mode0=sharedPreferences.getInt("mode",0);
-                        intent.putExtra("mode",mode0);
-                        startActivity(intent);
                         break;
 
                     case R.id.mode:
@@ -163,25 +198,42 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                                 ? ThemeManager.ThemeMode.NIGHT : ThemeManager.ThemeMode.DAY);*/
 
                         //SharedPreferences sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
+
+                        drawerLayout.closeDrawers();
+                        replaceFragment(new Background_anim());
                         int mode=sharedPreferences.getInt("mode",0);
 
                         if (mode==0){
                             mode=1;
+                            changeToNight_Anim();
                             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
-                            Toast.makeText(MainActivity.this,"切换到夜间模式",Toast.LENGTH_SHORT).show();
-
                         }else{
                             mode=0;
-                            ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
-                            Toast.makeText(MainActivity.this,"切换到日间模式",Toast.LENGTH_SHORT).show();
+                            ValueAnimator animatorSet=changeToDay_Anim();
+
+                            animatorSet.addListener(new Animator.AnimatorListener() {
+                                 @Override
+                                  public void onAnimationStart(Animator animation) {
+                                  }
+
+                                  @Override
+                                  public void onAnimationRepeat(Animator animation) {
+                                  }
+
+                                  @Override
+                                  public void onAnimationEnd(Animator animation) {
+                                      ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
+                                  }
+
+                                  @Override
+                                  public void onAnimationCancel(Animator animation) {
+                                  }
+                            });
                         }
 
                         SharedPreferences.Editor editor=getSharedPreferences("data",MODE_PRIVATE).edit();
                         editor.putInt("mode",mode);
                         editor.apply();
-
-                        Toast.makeText(MainActivity.this,"night_mode= "+mode,Toast.LENGTH_SHORT).show();
-
 
                         for(int i=0;i<list.size();i++){
                             adapter.notifyItemChanged(i);
@@ -283,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 LitePal.getDatabase();
                 Intent intent=new Intent(MainActivity.this,ContentActivity.class);
                // Log.d("numId",list.get(0).getNum()+"");
-                intent.putExtra("num0",list.size()+1);
+                intent.putExtra("num0",list.size());
 
                 List<Content> newList=DataSupport.order("msg desc").find(Content.class);
                 strList.clear();
@@ -311,13 +363,13 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         List<Content> newList=DataSupport.order("msg desc").find(Content.class);
         list.addAll(newList);
         adapter.notifyDataSetChanged();
-
         //获取当地已存储的主题模式，并设置
         //SharedPreferences sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
         int mode=sharedPreferences.getInt("mode",0);
 
         if (mode==1){
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+            initTheme();
         }else{
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
         }
@@ -330,6 +382,58 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
     public void onThemeChanged() {
         initTheme();
+    }
+
+    //@Override
+    /*public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //判断用户是否点击了“返回键”
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            //与上次点击返回键时刻作差
+            if(!drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                    //大于2000ms则认为是误操作，使用Toast进行提示
+                    String ss = Locale.getDefault().getLanguage();
+                    if (ss.equals("zh")) {
+                        Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Click again to exit", Toast.LENGTH_SHORT).show();
+                    }
+                    //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                    mExitTime = System.currentTimeMillis();
+                } else {
+                    //小于2000ms则认为是用户确实希望退出程序-调用System.exit()方法进行退出
+                    System.exit(0);
+                }
+                return true;
+            }else{
+                drawerLayout.closeDrawers();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }*/
+
+    @Override
+    public void onBackPressed() {
+        //与上次点击返回键时刻作差
+        if(!drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                //大于2000ms则认为是误操作，使用Toast进行提示
+                String ss = Locale.getDefault().getLanguage();
+                if (ss.equals("zh")) {
+                    Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Click again to exit", Toast.LENGTH_SHORT).show();
+                }
+                //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                mExitTime = System.currentTimeMillis();
+            } else {
+                //小于2000ms则认为是用户确实希望退出程序-调用System.exit()方法进行退出
+                super.onBackPressed();
+            }
+        }else{
+            drawerLayout.closeDrawers();
+        }
     }
 
     @Override
@@ -462,12 +566,17 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             values.put("nextContent","nothing");
                             DataSupport.updateAll(Content.class,values,"msg=?",ContentHelper.getPreContent(tempList,list.get(i).getMsg()));
                         }
+                        int id=list.get(i).getNum();
 
-                        DataSupport.deleteAll(Content.class,"msg=?",list.get(i).getMsg());
+                        Toast.makeText(MainActivity.this, "delete "+list.get(i).getNum(), Toast.LENGTH_SHORT).show();
+                        DataSupport.deleteAll(Content.class,"msg=?",list.get(i).getMsg()+"");
+                        //DataSupport.delete(Content.class,id);
+
 
                         list.remove(i);
-                        adapter.notifyItemInserted(i);
-                        adapter.notifyItemRangeChanged(0,list.size());
+                        adapter.notifyItemChanged(i);
+                        //adapter.notifyItemInserted(i);
+                        //adapter.notifyItemRangeChanged(0,list.size());
                     }else{
                         i++;
                     }
@@ -549,6 +658,97 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             selectButton.setText(getResources().getString(R.string.select_all_en));
             deleteButton.setText(getResources().getString(R.string.delete_en));
         }
+    }
+
+    private void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentTransaction transaction=fragmentManager.beginTransaction();
+        transaction.replace(R.id.right,fragment);
+        transaction.commit();
+    }
+
+    public void changeToNight_Anim(){
+        moonAnim1.setVisibility(View.VISIBLE);
+        moonAnim2.setVisibility(View.VISIBLE);
+
+        ObjectAnimator valueAnimator0 = ObjectAnimator.ofFloat(moonAnim1,"tmpAngle",0, 270);
+        ObjectAnimator valueAnimator1 = ObjectAnimator.ofFloat(moonAnim2,"tmpAngle",0,180);
+
+        ObjectAnimator animator0 = ObjectAnimator.ofFloat(moonAnim1,"alpha",1f, 0f);
+        ObjectAnimator animator1 = ObjectAnimator.ofFloat(moonAnim2,"alpha",1f,0f);
+        animator0.setDuration(500);
+        animator1.setDuration(500);
+
+        final AnimatorSet animSet0 = new AnimatorSet();
+        //AnimatorSet animSet1 = new AnimatorSet();
+        //animSet1.play(animator0).with(animator1);
+        animSet0.play(valueAnimator0).with(valueAnimator1);//.before(animSet1);
+        animSet0.setDuration(1000);
+        animSet0.start();
+
+        animSet0.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //animSet1.start();
+                moonAnim1.setVisibility(View.GONE);
+                moonAnim2.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+        });
+    }
+
+    public ValueAnimator changeToDay_Anim(){
+        sunAnim.setVisibility(View.VISIBLE);
+        sunAnim_lines.setVisibility(View.VISIBLE);
+
+        ObjectAnimator valueAnimator2 = ObjectAnimator.ofFloat(sunAnim,"tmpAngle",0,360);
+        ObjectAnimator valueAnimator3 = ObjectAnimator.ofInt(sunAnim_lines,"linesNum",1,9);
+
+        ObjectAnimator animator2 = ObjectAnimator.ofFloat(sunAnim,"alpha",1f, 0f);
+        ObjectAnimator animator3 = ObjectAnimator.ofFloat(sunAnim_lines,"alpha",1f,0f);
+
+        AnimatorSet animSet_sun = new AnimatorSet();
+        //AnimatorSet animSet_sun_alpha = new AnimatorSet();
+        //animSet_sun_alpha.play(animator2).with(animator3);
+        //animSet_sun_alpha.setDuration(500);
+
+        animSet_sun.play(valueAnimator2).with(valueAnimator3);//.before(animSet_sun_alpha);
+        animSet_sun.setDuration(1000);
+        animSet_sun.start();
+
+        animSet_sun.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //animSet1.start();
+                sunAnim.setVisibility(View.GONE);
+                sunAnim_lines.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+        });
+
+        return valueAnimator2;
     }
 
 
