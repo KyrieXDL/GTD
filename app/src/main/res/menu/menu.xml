@@ -11,7 +11,7 @@
             android:id="@+id/set_item"
             android:title="@string/set"/>
         <item
-            android:id="@+id/review_item"
+            android:id="@+id/review"
             android:title="@string/review"/>
     </group>
     <group

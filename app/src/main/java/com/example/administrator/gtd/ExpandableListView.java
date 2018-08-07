@@ -53,10 +53,8 @@ public class ExpandableListView extends AppCompatActivity implements ThemeManage
         int mode=intent.getIntExtra("mode",0);
 
         if (mode==1){
-            Toast.makeText(this, "night_mode", Toast.LENGTH_SHORT).show();
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
         }else{
-            Toast.makeText(this, "day_mode", Toast.LENGTH_SHORT).show();
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
         }
 
@@ -204,7 +202,7 @@ public class ExpandableListView extends AppCompatActivity implements ThemeManage
                     intent.putExtra("time0",content.getTime());
                     intent.putExtra("alarmtime0",content.getAlarmTime());
                     intent.putExtra("activityName",1);
-                    intent.putExtra("numFromContentActivity",content.getNum());
+                    intent.putExtra("numFromContentActivity",content.getContentid());
                     intent.putExtra("nextContentFromAdapter",content.getNextContent());
                     SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
                     int mode0=sharedPreferences0.getInt("mode",0);

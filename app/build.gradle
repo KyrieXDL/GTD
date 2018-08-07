@@ -10,7 +10,7 @@ android {
     }
     defaultConfig {
         applicationId "com.example.administrator.gtd"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -38,5 +38,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'org.litepal.android:core:1.6.1'
     compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'com.jwenfeng.pulltorefresh:library:1.2.7'
     testCompile 'junit:junit:4.12'
 }

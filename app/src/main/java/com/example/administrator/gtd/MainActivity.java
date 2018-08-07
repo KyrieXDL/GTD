@@ -18,7 +18,9 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -40,6 +42,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -60,15 +63,35 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.example.administrator.gtd.animator.Background_anim;
 import com.example.administrator.gtd.animator.MoonAnim1;
 import com.example.administrator.gtd.animator.MoonAnim2;
 import com.example.administrator.gtd.animator.SunAnim;
 import com.example.administrator.gtd.animator.SunAnim_Lines;
+import com.example.administrator.gtd.login.LoginActivity;
+import com.example.administrator.gtd.reiview_module.ReviewActivity;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
+import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -105,13 +128,15 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     private CoordinatorLayout coordinatorLayout;
 
     private long mExitTime;
-    private int temp=0;
+    private PullToRefreshLayout pullToRefreshLayout;
 
+    private int userid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ThemeManager.registerThemeChangeListener(this);
+        DataSupport.deleteAll(Content.class);
 
         //适配器
         recyclerView=(RecyclerView) findViewById(R.id.conten_list);
@@ -125,13 +150,21 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         recyclerView.setAdapter(adapter);
         sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
 
+        //向服务端发送请求，获取数据
+        Intent intent=getIntent();
+        userid=intent.getIntExtra("userid",1);
+        String url = "http://120.79.7.33/query.php?userid="+userid;
+        new MyTask().execute(url);
+
+        /*初始化布局文件*/
+        pullToRefreshLayout=(PullToRefreshLayout) findViewById(R.id.refresh);
+
         sunAnim=(SunAnim) findViewById(R.id.sunAnim);
         sunAnim_lines=(SunAnim_Lines) findViewById(R.id.sunAnim_Lines);
         moonAnim1=(MoonAnim1) findViewById(R.id.moonAnim1);
         moonAnim2=(MoonAnim2) findViewById(R.id.moonAnim2);
         coordinatorLayout=(CoordinatorLayout) findViewById(R.id.right);
 
-        //
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         supportActionBar = getSupportActionBar();
@@ -150,6 +183,34 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
+
+        //设置下拉刷新
+        pullToRefreshLayout.setRefreshListener(new BaseRefreshListener() {
+            @Override
+            public void refresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //向服务端发送请求，获取数据
+                        Intent intent=getIntent();
+                        int userid=intent.getIntExtra("userid",1);
+                        String url = "http://120.79.7.33/query.php?userid="+userid;
+                        new MyTask().execute(url);
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void loadMore() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 结束加载更多
+                        pullToRefreshLayout.finishLoadMore();
+                    }
+                }, 2000);
+            }
+        });
 
         //设置navigationView的item的点击事件
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -172,32 +233,6 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                         break;
 
                     case R.id.mode:
-                        /*int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-                        getDelegate().setLocalNightMode(currentNightMode == Configuration.UI_MODE_NIGHT_NO
-                                ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-                        // 同样需要调用recreate方法使之生效
-                        //recreate();
-
-                        if (night_mode==0){
-                            night_mode=1;
-                        }else{
-                            night_mode=0;
-                        }
-
-                        SharedPreferences.Editor editor=getSharedPreferences("data",MODE_PRIVATE).edit();
-                        editor.putInt("mode",night_mode);
-                        editor.apply();
-
-                        SharedPreferences sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
-                        int mode=sharedPreferences.getInt("mode",0);
-                        Toast.makeText(MainActivity.this,""+mode,Toast.LENGTH_SHORT).show();*/
-
-                        //Toast.makeText(MainActivity.this,""+night_mode,Toast.LENGTH_SHORT).show();
-
-                        /*ThemeManager.setThemeMode(ThemeManager.getThemeMode() == ThemeManager.ThemeMode.DAY
-                                ? ThemeManager.ThemeMode.NIGHT : ThemeManager.ThemeMode.DAY);*/
-
-                        //SharedPreferences sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
 
                         drawerLayout.closeDrawers();
                         replaceFragment(new Background_anim());
@@ -241,6 +276,12 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
                         //Toast.makeText(MainActivity.this,"night_mode= "+list.get(0).getNight_mode(),Toast.LENGTH_SHORT).show();
                         break;
+
+                    case R.id.review:
+                        Intent intentReview=new Intent(MainActivity.this, ReviewActivity.class);
+                        startActivity(intentReview);
+                        break;
+
 
                     case R.id.language:
                         String ss = Locale.getDefault().getLanguage();
@@ -349,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 //SharedPreferences sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
                 int mode=sharedPreferences.getInt("mode",0);
                 intent.putExtra("mode",mode);
+                intent.putExtra("userid",userid);
                 startActivity(intent);
 
                 menuItem.setTitle(getResources().getText(R.string.edit));
@@ -359,9 +401,11 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     @Override
     protected void onResume() {
         super.onResume();
+
         list.clear();
         List<Content> newList=DataSupport.order("msg desc").find(Content.class);
         list.addAll(newList);
+        //Toast.makeText(this, ""+list.size(), Toast.LENGTH_SHORT).show();
         adapter.notifyDataSetChanged();
         //获取当地已存储的主题模式，并设置
         //SharedPreferences sharedPreferences=getSharedPreferences("data",MODE_PRIVATE);
@@ -380,38 +424,54 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
     }
 
+    //通过异步任务发送请求查询，返回数据并保存到本地数据库
+    class MyTask extends AsyncTask<String,Integer,String>{
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtil.sendHttpRequest(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            try {
+                pullToRefreshLayout.finishRefresh();
+                //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                Gson gson = new Gson();
+                Type type = new TypeToken<List<Content>>() {
+                }.getType();
+                List<Content> listtmp = gson.fromJson(s, type);
+                DataSupport.deleteAll(Content.class);
+                for (Content content : listtmp) {
+                    content.setContentid(content.getId());
+                    //Log.d("contentID",content.getId()+"");
+                    content.save();
+                }
+                list.clear();
+                list.addAll(listtmp);
+                Log.d("contentID",list.get(0).getContentid()+"");
+
+                for (int i = 0; i < list.size(); i++) {
+                    adapter.notifyItemInserted(i);
+                    adapter.notifyDataSetChanged();
+                }
+                Toast.makeText(getApplicationContext(),getResources().getString(R.string.refresh_success), Toast.LENGTH_SHORT).show();
+
+            }catch (Exception e){
+                e.getMessage();
+                if (s.equals("")){
+                    Toast.makeText(MainActivity.this,getResources().getString(R.string.no_data) , Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MainActivity.this,getResources().getString(R.string.net_error) , Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     public void onThemeChanged() {
         initTheme();
     }
-
-    //@Override
-    /*public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //判断用户是否点击了“返回键”
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-            //与上次点击返回键时刻作差
-            if(!drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                if ((System.currentTimeMillis() - mExitTime) > 2000) {
-                    //大于2000ms则认为是误操作，使用Toast进行提示
-                    String ss = Locale.getDefault().getLanguage();
-                    if (ss.equals("zh")) {
-                        Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Click again to exit", Toast.LENGTH_SHORT).show();
-                    }
-                    //并记录下本次点击“返回键”的时刻，以便下次进行判断
-                    mExitTime = System.currentTimeMillis();
-                } else {
-                    //小于2000ms则认为是用户确实希望退出程序-调用System.exit()方法进行退出
-                    System.exit(0);
-                }
-                return true;
-            }else{
-                drawerLayout.closeDrawers();
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }*/
 
     @Override
     public void onBackPressed() {
@@ -435,6 +495,33 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             drawerLayout.closeDrawers();
         }
     }
+
+    class MyDeleteTask extends AsyncTask<String,Integer,String>{
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtil.sendHttpRequest(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONObject object = new JSONObject(s);
+                int res=object.getInt("res");
+                if (res==1){
+                    Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MainActivity.this,"删除失败",Toast.LENGTH_SHORT).show();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -512,6 +599,31 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         return true;
     }
 
+    class MyUpdateTask extends AsyncTask<String,Integer,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtil.sendHttpRequest(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONObject object = new JSONObject(s);
+                int res=object.getInt("res");
+                if (res==0){
+                    Toast.makeText(MainActivity.this,"修改失败",Toast.LENGTH_SHORT).show();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     private void deleteAlarm() {
         final Dialog dialog = new Dialog(this, R.style.NormalDialogStyle);
         View view = View.inflate(this, R.layout.dialog_normal, null);
@@ -563,20 +675,23 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                         */
                         if (!ContentHelper.getPreContent(tempList,list.get(i).getMsg()).equals("")){
                             ContentValues values=new ContentValues();
-                            values.put("nextContent","nothing");
+                            values.put("nextcontent","nothing");
+                            //更新服务端数据
+                            List<Content> contentList=DataSupport.where("msg=?",ContentHelper.getPreContent(tempList,list.get(i).getMsg())).find(Content.class);
+                            String updateurl="http://120.79.7.33/update2.php?contentid="+contentList.get(0).getContentid();
+                            new MyUpdateTask().execute(updateurl);
+                            //更新本地数据
                             DataSupport.updateAll(Content.class,values,"msg=?",ContentHelper.getPreContent(tempList,list.get(i).getMsg()));
                         }
-                        int id=list.get(i).getNum();
 
-                        Toast.makeText(MainActivity.this, "delete "+list.get(i).getNum(), Toast.LENGTH_SHORT).show();
-                        DataSupport.deleteAll(Content.class,"msg=?",list.get(i).getMsg()+"");
-                        //DataSupport.delete(Content.class,id);
-
+                        //发送请求删除服务端数据
+                        String url="http://120.79.7.33/delete.php?contentid="+list.get(i).getContentid();
+                        new MyDeleteTask().execute(url);
+                        //删除本地数据
+                        DataSupport.deleteAll(Content.class,"contentid=?",list.get(i).getContentid()+"");
 
                         list.remove(i);
                         adapter.notifyItemChanged(i);
-                        //adapter.notifyItemInserted(i);
-                        //adapter.notifyItemRangeChanged(0,list.size());
                     }else{
                         i++;
                     }

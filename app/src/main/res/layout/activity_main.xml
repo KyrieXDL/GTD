@@ -15,7 +15,8 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolBar"
@@ -27,12 +28,20 @@
                 app:layout_scrollFlags="scroll|enterAlways|snap" />
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:background="?attr/mainBackground"
-            android:id="@+id/conten_list"
+        <com.jwenfeng.library.pulltorefresh.PullToRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/refresh"
             android:layout_width="match_parent"
-            android:layout_height="550dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            android:layout_height="match_parent"
+            android:paddingTop="55dp">
+            <android.support.v7.widget.RecyclerView
+                android:background="?attr/mainBackground"
+                android:id="@+id/conten_list"
+                android:layout_width="match_parent"
+                android:layout_height="550dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        </com.jwenfeng.library.pulltorefresh.PullToRefreshLayout>
 
        <LinearLayout
            android:layout_width="match_parent"

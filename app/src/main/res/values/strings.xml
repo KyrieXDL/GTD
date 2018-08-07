@@ -54,4 +54,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="net_error">网络异常</string>
+    <string name="refresh_success">刷新成功</string>
+    <string name="no_data">暂无数据</string>
 </resources>

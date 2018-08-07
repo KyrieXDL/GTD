@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBar;
@@ -37,8 +38,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,8 +92,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     private LinearLayout selectNextContent_hint;
     private LinearLayout selectTime_hint;
     private LinearLayout dialog_save;
-    private RelativeLayout datePickerView;
 
+    private int userid;
     private int mode=0;  //当前主题模式，0为为日间模式，1为夜间模式
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +137,9 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         activityName=intent.getIntExtra("activityName",0);  //区分是哪个activity
         text.setText(data);  //设置事件的内容
         mode=intent.getIntExtra("mode",0);
+        userid=intent.getIntExtra("userid",0);
+
+        Toast.makeText(this, ""+numFromContentActivity, Toast.LENGTH_SHORT).show();
 
         if (mode==1){
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
@@ -503,6 +513,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     //String now = sdf.format(new Date());
 
                     //当用户所输入的内容不为空时，执行保存操作
+                    String msg=text.getText().toString();
                     if (!text.getText().toString().equals("")){
                         //将数据保存到数据库中，并在主界面添加事件
                         Content contentTemp=new Content("",false,false);
@@ -514,24 +525,30 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                         else{
                             contentTemp.setAlarmTime(now);  //如果未设置提醒时间则初始化为当前事件
                         }
-                        contentTemp.setNum(number);
+                        //contentTemp.setNum(number);
                         contentTemp.setDone(false);
                         contentTemp.setNextContent(nextContent);
                         contentTemp.setLevel(level);
-                        contentTemp.save();
 
-                    /*
-                    * 如果用户在创立事件时设置提醒时间，则发送广播*/
-                        String temptime=ContentHelper.getTimeBetweenContents(str_time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
-                        if(!alarmTime.equals(now)) {
-                            // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
-                            setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                        try {
+                            //发送网络请求，保存数据到服务端的数据库中
+                            String url = "http://120.79.7.33/insert.php";
+                            new MyTask().execute(url,msg,now,contentTemp.getAlarmTime(),level+"",nextContent,userid+"");
+                            contentTemp.save();
+
+                            /*
+                              * 如果用户在创立事件时设置提醒时间，则发送广播*/
+                            String temptime=ContentHelper.getTimeBetweenContents(str_time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
+                            if(!alarmTime.equals(now)) {
+                                // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
+                                setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                            }
+                            isSave=1;
+                            finish();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            Toast.makeText(this, getResources().getString(R.string.net_error), Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(ContentActivity.this,"保存成功",Toast.LENGTH_SHORT).show();
-
-                        //
-                        isSave=1;
-                        finish();
                     }else{
                     //当用户所输入的内容为空提醒用户，但不保存
                         saveAlarm();
@@ -545,12 +562,12 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
                     ContentValues values=new ContentValues();
                     values.put("msg",text.getText().toString());
-                    values.put("alarmTime",alarmTime);
+                    values.put("alarmtime",alarmTime);
                     if (Long.parseLong(temptime)>=0) {
-                        values.put("isDone", false);
+                        values.put("isdone", false);
                     }
-                    values.put("time",nowtemp);
-                    values.put("nextContent",nextContent);
+                    values.put("buildtime",nowtemp);
+                    values.put("nextcontent",nextContent);
                     values.put("level",level);
                     time.setText(nowtemp);
 
@@ -562,13 +579,25 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
                     Log.d("alarmContent=",text.getText().toString());
                     Log.d("numFromContentActivity",numFromContentActivity+"");
-                    DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
+                    //DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
 
-                    if (Long.parseLong(temptime)>=0){
-                        setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                    int id=numFromContentActivity;
+                    String msg=text.getText().toString();
+
+                    try {
+                        //发送网络请求，更新服务端的数据
+                        String url = "http://120.79.7.33/update.php";
+                        new MyUpdateTask().execute(url, msg, nowtemp, alarmTime, level + "", nextContent, id + "");
+                        //更新本地数据
+                        DataSupport.updateAll(Content.class,values,"contentid=?",id+"");
+                        if (Long.parseLong(temptime) >= 0) {
+                            setReminder(true, Integer.parseInt(temptime) + currentTime, text.getText().toString(), numFromContentActivity);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                    Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
-                    finish();
+                    //Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
+                    //finish();
                 }
                 break;
 
@@ -577,6 +606,61 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         }
         return true;
     }
+
+    //异步任务发送网络请求
+    class MyTask extends AsyncTask<String,Integer,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtil.sendHttp(params[0],params[1],params[2],params[3],params[4],params[5],params[6]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(ContentActivity.this, s, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONObject object = new JSONObject(s);
+                int res=object.getInt("res");
+                if (res==1){
+                    Toast.makeText(ContentActivity.this,"保存成功",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(ContentActivity.this,"保存失败",Toast.LENGTH_SHORT).show();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class MyUpdateTask extends AsyncTask<String,Integer,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtil.sendHttp(params[0],params[1],params[2],params[3],params[4],params[5],params[6]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(ContentActivity.this, s, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONObject object = new JSONObject(s);
+                int res=object.getInt("res");
+                if (res==1){
+                    Toast.makeText(ContentActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(ContentActivity.this,"修改失败",Toast.LENGTH_SHORT).show();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     private void quitAlarm() {
         final Dialog dialog = new Dialog(this, R.style.NormalDialogStyle);
