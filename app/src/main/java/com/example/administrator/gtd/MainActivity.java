@@ -64,6 +64,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.administrator.gtd.animator.Background_anim;
 import com.example.administrator.gtd.animator.MoonAnim1;
 import com.example.administrator.gtd.animator.MoonAnim2;
@@ -71,6 +73,7 @@ import com.example.administrator.gtd.animator.SunAnim;
 import com.example.administrator.gtd.animator.SunAnim_Lines;
 import com.example.administrator.gtd.login.LoginActivity;
 import com.example.administrator.gtd.reiview_module.ReviewActivity;
+import com.example.administrator.gtd.user_info.UserInfoActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
@@ -99,6 +102,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity implements ThemeManager.OnThemeChangeListener{
@@ -129,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
     private long mExitTime;
     private PullToRefreshLayout pullToRefreshLayout;
+    private CircleImageView circleImageView;
 
     private int userid;
     @Override
@@ -153,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         //向服务端发送请求，获取数据
         Intent intent=getIntent();
         userid=intent.getIntExtra("userid",1);
-        String url = "http://120.79.7.33/query.php?userid="+userid;
+        final String url = "http://120.79.7.33/query.php?userid="+userid;
         new MyTask().execute(url);
 
         /*初始化布局文件*/
@@ -184,6 +190,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
 
+       // ImageView head_img=(ImageView) findViewById(R.id.header_img);
+
         //设置下拉刷新
         pullToRefreshLayout.setRefreshListener(new BaseRefreshListener() {
             @Override
@@ -211,6 +219,23 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 }, 2000);
             }
         });
+
+        //加载头像图片
+        View headview=navigationView.inflateHeaderView(R.layout.header);
+        circleImageView=(CircleImageView) headview.findViewById(R.id.header_img);
+        String imgurl="http://120.79.7.33/gtd/load.php?userid="+userid;
+        Glide.with(MainActivity.this).load(imgurl).error(R.drawable.head_img).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(circleImageView);
+        circleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "clicked image", Toast.LENGTH_SHORT).show();
+                //设置点击头像后的事件
+                Intent intent1=new Intent(MainActivity.this, UserInfoActivity.class);
+                intent1.putExtra("userid",userid);
+                startActivity(intent1);
+            }
+        });
+
 
         //设置navigationView的item的点击事件
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -401,7 +426,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     @Override
     protected void onResume() {
         super.onResume();
-
+        String imgurl="http://120.79.7.33/gtd/load.php?userid="+userid;
+        Glide.with(MainActivity.this).load(imgurl).error(R.drawable.kyrie).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(circleImageView);
         list.clear();
         List<Content> newList=DataSupport.order("msg desc").find(Content.class);
         list.addAll(newList);
