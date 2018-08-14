@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     protected void onResume() {
         super.onResume();
         String imgurl="http://120.79.7.33/gtd/load.php?userid="+userid;
-        Glide.with(MainActivity.this).load(imgurl).error(R.drawable.kyrie).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(circleImageView);
+        Glide.with(MainActivity.this).load(imgurl).error(R.drawable.head_img).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(circleImageView);
         list.clear();
         List<Content> newList=DataSupport.order("msg desc").find(Content.class);
         list.addAll(newList);

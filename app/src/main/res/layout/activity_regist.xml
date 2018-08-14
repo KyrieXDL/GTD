@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.administrator.gtd.login.RegistActivity">
+
+    <TextView
+        android:id="@+id/username"
+        android:text="用户名:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"/>
+    <EditText
+        android:id="@+id/username_edit"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@+id/username"
+        />
+    <ImageView
+        android:id="@+id/username_check"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@id/username_edit"
+        android:src="@drawable/valid"/>
+
+    <TextView
+        android:id="@+id/password"
+        android:text="密码:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/username"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"/>
+    <EditText
+        android:id="@+id/password_edit"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/password"
+        android:password="true"
+        android:layout_below="@+id/username_edit"
+        android:layout_marginLeft="40dp"
+        />
+
+    <ImageView
+        android:id="@+id/password0_check"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/username_check"
+        android:layout_toRightOf="@id/password_edit"
+        android:src="@drawable/valid"/>
+
+    <TextView
+        android:id="@+id/password2"
+        android:text="确认密码:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"/>
+    <EditText
+        android:id="@+id/password2_edit"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/password2"
+        android:password="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/password_edit"/>
+
+    <ImageView
+        android:id="@+id/password_check"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/password_edit"
+        android:layout_toRightOf="@id/password2_edit"
+        android:src="@drawable/valid"/>
+
+    <Button
+        android:id="@+id/regist"
+        android:text="注册"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

@@ -43,7 +43,8 @@
         <activity android:name=".EmptyExpandableListActivity" />
         <activity android:name=".reiview_module.ReviewActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".user_info.UserInfoActivity"></activity>
+        <activity android:name=".user_info.UserInfoActivity" />
+        <activity android:name=".login.RegistActivity"></activity>
     </application>
 
 </manifest>

@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText username_edit;
     private EditText password_edit;
     private Button loginButton;
+    private Button registButton;
 
     private int res;
     private String msg;
@@ -41,7 +42,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         username_edit=(EditText) findViewById(R.id.username);
         password_edit=(EditText) findViewById(R.id.password);
         loginButton=(Button) findViewById(R.id.loginButton);
+        registButton=(Button) findViewById(R.id.registButton);
 
+        registButton.setOnClickListener(this);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,15 +65,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            /*case R.id.loginButton:
+            case R.id.registButton:
 
-                Log.d("msgggg","hhhhhhh");
-                Toast.makeText(this, "login", Toast.LENGTH_SHORT).show();
-                username=username_edit.getText().toString();
-                password=password_edit.getText().toString();
-                String url = "http://220.167.43.113/login/login.php?username="+username+"&"+"password="+password;
-                doLogin(url);
-                break;*/
+                Intent intent=new Intent(LoginActivity.this,RegistActivity.class);
+                startActivity(intent);
+                break;
         }
     }
 
