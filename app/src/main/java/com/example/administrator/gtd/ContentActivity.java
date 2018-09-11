@@ -1,6 +1,7 @@
 package com.example.administrator.gtd;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -98,33 +99,15 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.content);
         ThemeManager.registerThemeChangeListener(this);
 
+
+
         /*
         * 初始化控件*/
-        Toolbar toolbar=(Toolbar) findViewById(R.id.contentToolBar);
-        setSupportActionBar(toolbar);
-        text=(EditText) findViewById(R.id.edit_text);
-        time=(TextView) findViewById(R.id.time);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
-        //date=new Date(System.currentTimeMillis());
-        str_time=sdf.format(new Date());
-        time.setText(str_time);
-        selectTime = (RelativeLayout) findViewById(R.id.selectTime);
-        selectTime.setOnClickListener(this);
-        currentTime = (TextView) findViewById(R.id.currentTime);  //提醒时间
-        card_text=(CardView) findViewById(R.id.card_text);
-        card_set=(CardView) findViewById(R.id.card_set);
-        linearLayout=(LinearLayout) findViewById(R.id.content_background);
-        selectNextContent=(LinearLayout) findViewById(R.id.view4);
-        unfoldButton = (UnfoldButton) findViewById(R.id.unfoldButton);
-        selectNextContent_hint=(LinearLayout) findViewById(R.id.view3);
-        selectTime_hint=(LinearLayout) findViewById(R.id.view2);
-        supportActionBar = getSupportActionBar();
-
-        View view_save = View.inflate(this, R.layout.dialog_save, null);
-        dialog_save=(LinearLayout) view_save.findViewById(R.id.dialog_save);
+        iniView();
 
         //通过intent获取数据
         Intent intent=getIntent();
@@ -139,7 +122,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         mode=intent.getIntExtra("mode",0);
         userid=intent.getIntExtra("userid",0);
 
-        Toast.makeText(this, ""+numFromContentActivity, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, ""+numFromContentActivity, Toast.LENGTH_SHORT).show();
 
         if (mode==1){
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
@@ -244,6 +227,31 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
 
         //初始化主题
         initTheme();
+    }
+
+    public void iniView(){
+        Toolbar toolbar=(Toolbar) findViewById(R.id.contentToolBar);
+        setSupportActionBar(toolbar);
+        text=(EditText) findViewById(R.id.edit_text);
+        time=(TextView) findViewById(R.id.time);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+        //date=new Date(System.currentTimeMillis());
+        str_time=sdf.format(new Date());
+        time.setText(str_time);
+        selectTime = (RelativeLayout) findViewById(R.id.selectTime);
+        selectTime.setOnClickListener(this);
+        currentTime = (TextView) findViewById(R.id.currentTime);  //提醒时间
+        card_text=(CardView) findViewById(R.id.card_text);
+        card_set=(CardView) findViewById(R.id.card_set);
+        linearLayout=(LinearLayout) findViewById(R.id.content_background);
+        selectNextContent=(LinearLayout) findViewById(R.id.view4);
+        unfoldButton = (UnfoldButton) findViewById(R.id.unfoldButton);
+        selectNextContent_hint=(LinearLayout) findViewById(R.id.view3);
+        selectTime_hint=(LinearLayout) findViewById(R.id.view2);
+        supportActionBar = getSupportActionBar();
+
+        View view_save = View.inflate(this, R.layout.dialog_save, null);
+        dialog_save=(LinearLayout) view_save.findViewById(R.id.dialog_save);
     }
 
     @Override
@@ -445,6 +453,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                         ||(level!=content.getLevel())){
                     quitAlarm();
                 }else{
+
                     finish();
                 }
             }else{
@@ -456,6 +465,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                         quitAlarm();
                     }else{
                         //如果用户已经保存，则直接退出
+                        //startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(ContentActivity.this, linearLayout, "sharedView").toBundle());
+
                         finish();
                     }
                     //如果用户新建事件时没有输入内容则直接退出

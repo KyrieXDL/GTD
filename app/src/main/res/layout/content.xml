@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/mainBackground">
+    android:background="?attr/mainBackground"
+    android:transitionName="sharedView">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/contentToolBar"

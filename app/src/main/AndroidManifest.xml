@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".login.LoginActivity">
+        <activity android:name=".loginUI.LoginActivity"
+            android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,7 +45,9 @@
         <activity android:name=".reiview_module.ReviewActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".user_info.UserInfoActivity" />
-        <activity android:name=".login.RegistActivity"></activity>
+        <activity android:name=".loginUI.RegistActivity"
+            android:theme="@style/Translucent"
+            ></activity>
     </application>
 
 </manifest>

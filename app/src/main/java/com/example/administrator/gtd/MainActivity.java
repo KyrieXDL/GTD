@@ -5,12 +5,9 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.AlarmManager;
+import android.app.ActivityOptions;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -24,41 +21,31 @@ import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.DisplayMetrics;
+
+import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +58,6 @@ import com.example.administrator.gtd.animator.MoonAnim1;
 import com.example.administrator.gtd.animator.MoonAnim2;
 import com.example.administrator.gtd.animator.SunAnim;
 import com.example.administrator.gtd.animator.SunAnim_Lines;
-import com.example.administrator.gtd.login.LoginActivity;
 import com.example.administrator.gtd.reiview_module.ReviewActivity;
 import com.example.administrator.gtd.user_info.UserInfoActivity;
 import com.google.gson.Gson;
@@ -79,27 +65,12 @@ import com.google.gson.reflect.TypeToken;
 import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
 import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -140,9 +111,12 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_main);
         ThemeManager.registerThemeChangeListener(this);
         DataSupport.deleteAll(Content.class);
+
+
 
         //适配器
         recyclerView=(RecyclerView) findViewById(R.id.conten_list);
@@ -162,36 +136,13 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         final String url = "http://120.79.7.33/query.php?userid="+userid;
         new MyTask().execute(url);
 
-        /*初始化布局文件*/
-        pullToRefreshLayout=(PullToRefreshLayout) findViewById(R.id.refresh);
+        initialView();
+        setListener();
 
-        sunAnim=(SunAnim) findViewById(R.id.sunAnim);
-        sunAnim_lines=(SunAnim_Lines) findViewById(R.id.sunAnim_Lines);
-        moonAnim1=(MoonAnim1) findViewById(R.id.moonAnim1);
-        moonAnim2=(MoonAnim2) findViewById(R.id.moonAnim2);
-        coordinatorLayout=(CoordinatorLayout) findViewById(R.id.right);
 
-        Toolbar toolbar=(Toolbar) findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
-        supportActionBar = getSupportActionBar();
-        navigationView=(NavigationView) findViewById(R.id.nav_view);
-        Resources resource=(Resources)getBaseContext().getResources();
-        ColorStateList csl=(ColorStateList)resource.getColorStateList(R.color.itemColor);
-        navigationView.setItemTextColor(csl);
+    }
 
-        drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
-        View view_normal = View.inflate(this, R.layout.dialog_normal, null);
-        View view_delete = View.inflate(this, R.layout.dialog_delete, null);
-        dialog_delete=(LinearLayout) view_delete.findViewById(R.id.dialog_delete);
-        dialog_normal=(LinearLayout) view_normal.findViewById(R.id.dialog_normal);
-        ActionBar actionBar=getSupportActionBar();
-        if(actionBar!=null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        }
-
-       // ImageView head_img=(ImageView) findViewById(R.id.header_img);
-
+    public void setListener(){
         //设置下拉刷新
         pullToRefreshLayout.setRefreshListener(new BaseRefreshListener() {
             @Override
@@ -235,109 +186,6 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 startActivity(intent1);
             }
         });
-
-
-        //设置navigationView的item的点击事件
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                //在这里处理item的点击事件
-                switch (item.getItemId()){
-                    case R.id.inbox_item:
-                        Intent intent;
-                        if (list.size()>0) {
-                            intent = new Intent(MainActivity.this, ExpandableListView.class);
-                            int mode0=sharedPreferences.getInt("mode",0);
-                            intent.putExtra("mode",mode0);
-                            startActivity(intent);
-                        }else{
-                            intent = new Intent(MainActivity.this, EmptyExpandableListActivity.class);
-                            startActivity(intent);
-                        }
-                        //SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
-                        break;
-
-                    case R.id.mode:
-
-                        drawerLayout.closeDrawers();
-                        replaceFragment(new Background_anim());
-                        int mode=sharedPreferences.getInt("mode",0);
-
-                        if (mode==0){
-                            mode=1;
-                            changeToNight_Anim();
-                            ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
-                        }else{
-                            mode=0;
-                            ValueAnimator animatorSet=changeToDay_Anim();
-
-                            animatorSet.addListener(new Animator.AnimatorListener() {
-                                 @Override
-                                  public void onAnimationStart(Animator animation) {
-                                  }
-
-                                  @Override
-                                  public void onAnimationRepeat(Animator animation) {
-                                  }
-
-                                  @Override
-                                  public void onAnimationEnd(Animator animation) {
-                                      ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
-                                  }
-
-                                  @Override
-                                  public void onAnimationCancel(Animator animation) {
-                                  }
-                            });
-                        }
-
-                        SharedPreferences.Editor editor=getSharedPreferences("data",MODE_PRIVATE).edit();
-                        editor.putInt("mode",mode);
-                        editor.apply();
-
-                        for(int i=0;i<list.size();i++){
-                            adapter.notifyItemChanged(i);
-                        }
-
-                        //Toast.makeText(MainActivity.this,"night_mode= "+list.get(0).getNight_mode(),Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case R.id.review:
-                        Intent intentReview=new Intent(MainActivity.this, ReviewActivity.class);
-                        startActivity(intentReview);
-                        break;
-
-
-                    case R.id.language:
-                        String ss = Locale.getDefault().getLanguage();
-                        //用if语句判断，如果当前为中文就变成英文，反之变成中文
-                        if (ss.equals("zh")){
-                            Locale.setDefault(Locale.ENGLISH);
-                            Configuration configuration = getBaseContext().getResources().getConfiguration();
-                            configuration.locale = Locale.ENGLISH;
-                            getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-                            //recreate();
-                            changeLanguage(1);
-                        }else {
-                            Locale.setDefault(Locale.CHINESE);
-                            Configuration configuration = getBaseContext().getResources().getConfiguration();
-                            configuration.locale = Locale.CHINESE;
-                            getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-                            //recreate();
-                            changeLanguage(0);
-                        }
-                        break;
-
-                }
-                return true;
-            }
-        });
-
-        //初始化删除和全选按钮为不可见
-        deleteButton=(Button) findViewById(R.id.delete_button);
-        selectButton=(Button) findViewById(R.id.select_all);
-        deleteButton.setVisibility(View.GONE);
-        selectButton.setVisibility(View.GONE);
 
         //点击全选按钮的事件
         selectButton.setOnClickListener(new View.OnClickListener() {
@@ -385,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 if (ContentAdapter.isAllNotSelected()){
                     deleteNullAlarm();
                 }else{
-                //如果用户已经选择事件去删除，则询问用户是否确定要删除，避免用户误操作
+                    //如果用户已经选择事件去删除，则询问用户是否确定要删除，避免用户误操作
                     deleteAlarm();
                 }
 
@@ -400,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             public void onClick(View v) {
                 LitePal.getDatabase();
                 Intent intent=new Intent(MainActivity.this,ContentActivity.class);
-               // Log.d("numId",list.get(0).getNum()+"");
+                // Log.d("numId",list.get(0).getNum()+"");
                 intent.putExtra("num0",list.size());
 
                 List<Content> newList=DataSupport.order("msg desc").find(Content.class);
@@ -416,11 +264,145 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 int mode=sharedPreferences.getInt("mode",0);
                 intent.putExtra("mode",mode);
                 intent.putExtra("userid",userid);
-                startActivity(intent);
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, button, "sharedView").toBundle());
 
                 menuItem.setTitle(getResources().getText(R.string.edit));
             }
         });
+
+
+        //设置navigationView的item的点击事件
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                //在这里处理item的点击事件
+                switch (item.getItemId()){
+                    case R.id.inbox_item:
+                        Intent intent;
+                        if (list.size()>0) {
+                            intent = new Intent(MainActivity.this, ExpandableListView.class);
+                            int mode0=sharedPreferences.getInt("mode",0);
+                            intent.putExtra("mode",mode0);
+                            startActivity(intent);
+                        }else{
+                            intent = new Intent(MainActivity.this, EmptyExpandableListActivity.class);
+                            startActivity(intent);
+                        }
+                        //SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
+                        break;
+
+                    case R.id.mode:
+
+                        drawerLayout.closeDrawers();
+                        replaceFragment(new Background_anim());
+                        int mode=sharedPreferences.getInt("mode",0);
+
+                        if (mode==0){
+                            mode=1;
+                            changeToNight_Anim();
+                            ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+                        }else{
+                            mode=0;
+                            ValueAnimator animatorSet=changeToDay_Anim();
+
+                            animatorSet.addListener(new Animator.AnimatorListener() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animator animation) {
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
+                                }
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+                                }
+                            });
+                        }
+
+                        SharedPreferences.Editor editor=getSharedPreferences("data",MODE_PRIVATE).edit();
+                        editor.putInt("mode",mode);
+                        editor.apply();
+
+                        for(int i=0;i<list.size();i++){
+                            adapter.notifyItemChanged(i);
+                        }
+
+                        //Toast.makeText(MainActivity.this,"night_mode= "+list.get(0).getNight_mode(),Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case R.id.review:
+                        Intent intentReview=new Intent(MainActivity.this, ReviewActivity.class);
+                        startActivity(intentReview);
+                        break;
+
+
+                    case R.id.language:
+                        String ss = Locale.getDefault().getLanguage();
+                        //用if语句判断，如果当前为中文就变成英文，反之变成中文
+                        if (ss.equals("zh")){
+                            Locale.setDefault(Locale.ENGLISH);
+                            Configuration configuration = getBaseContext().getResources().getConfiguration();
+                            configuration.locale = Locale.ENGLISH;
+                            getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
+                            //recreate();
+                            changeLanguage(1);
+                        }else {
+                            Locale.setDefault(Locale.CHINESE);
+                            Configuration configuration = getBaseContext().getResources().getConfiguration();
+                            configuration.locale = Locale.CHINESE;
+                            getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
+                            //recreate();
+                            changeLanguage(0);
+                        }
+                        break;
+
+                }
+                return true;
+            }
+        });
+
+    }
+
+    public void initialView(){
+         /*初始化布局文件*/
+        pullToRefreshLayout=(PullToRefreshLayout) findViewById(R.id.refresh);
+
+        sunAnim=(SunAnim) findViewById(R.id.sunAnim);
+        sunAnim_lines=(SunAnim_Lines) findViewById(R.id.sunAnim_Lines);
+        moonAnim1=(MoonAnim1) findViewById(R.id.moonAnim1);
+        moonAnim2=(MoonAnim2) findViewById(R.id.moonAnim2);
+        coordinatorLayout=(CoordinatorLayout) findViewById(R.id.right);
+
+        Toolbar toolbar=(Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+        supportActionBar = getSupportActionBar();
+        navigationView=(NavigationView) findViewById(R.id.nav_view);
+        Resources resource=(Resources)getBaseContext().getResources();
+        ColorStateList csl=(ColorStateList)resource.getColorStateList(R.color.itemColor);
+        navigationView.setItemTextColor(csl);
+
+        drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
+        View view_normal = View.inflate(this, R.layout.dialog_normal, null);
+        View view_delete = View.inflate(this, R.layout.dialog_delete, null);
+        dialog_delete=(LinearLayout) view_delete.findViewById(R.id.dialog_delete);
+        dialog_normal=(LinearLayout) view_normal.findViewById(R.id.dialog_normal);
+        ActionBar actionBar=getSupportActionBar();
+        if(actionBar!=null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        }
+
+        //初始化删除和全选按钮为不可见
+        deleteButton=(Button) findViewById(R.id.delete_button);
+        selectButton=(Button) findViewById(R.id.select_all);
+        deleteButton.setVisibility(View.GONE);
+        selectButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -482,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                     adapter.notifyItemInserted(i);
                     adapter.notifyDataSetChanged();
                 }
-                Toast.makeText(getApplicationContext(),getResources().getString(R.string.refresh_success), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(getApplicationContext(),getResources().getString(R.string.refresh_success), Toast.LENGTH_SHORT).show();
 
             }catch (Exception e){
                 e.getMessage();
