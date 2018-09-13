@@ -2,6 +2,7 @@ package com.example.administrator.gtd.loginUI;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -233,6 +234,9 @@ public class LoginActivity extends AppCompatActivity {
                 getWindow().setEnterTransition(explode);
                 ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
                 startActivity(intent,oc2.toBundle());
+                SharedPreferences.Editor editor=getSharedPreferences("data",MODE_PRIVATE).edit();
+                editor.putInt("mode",0);
+                editor.apply();
             }else{
                 Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                 //showResponse(msg);

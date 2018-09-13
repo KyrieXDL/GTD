@@ -69,6 +69,10 @@
     <string name="next">确定</string>
     <string name="register">REGISTER</string>
 
-    <item name="visible" type="id"/>
-    <item name="masked" type="id"/>
+    <string name="title_home">主页</string>
+    <string name="title_dashboard">历史</string>
+    <string name="title_notifications">通知</string>
+
+    <item name="visible" type="id" />
+    <item name="masked" type="id" />
 </resources>

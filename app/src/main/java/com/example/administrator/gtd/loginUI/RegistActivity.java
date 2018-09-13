@@ -35,9 +35,9 @@ public class RegistActivity extends AppCompatActivity {
     private List<User> list;
     private EditText username_edit,password_edit,password2_edit;
     private Button button;
-    private ImageView img1;
+   /* private ImageView img1;
     private ImageView img2;
-    private ImageView img3;
+    private ImageView img3;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +64,12 @@ public class RegistActivity extends AppCompatActivity {
         password_edit=(EditText) findViewById(R.id.et_password);
         password2_edit=(EditText) findViewById(R.id.et_repeatpassword);
         button=(Button) findViewById(R.id.bt_go);
-        img1=(ImageView) findViewById(R.id.img1);
+        /*img1=(ImageView) findViewById(R.id.img1);
         img2=(ImageView) findViewById(R.id.img2);
         img3=(ImageView) findViewById(R.id.img3);
         img1.setVisibility(View.INVISIBLE);
         img2.setVisibility(View.INVISIBLE);
-        img3.setVisibility(View.INVISIBLE);
+        img3.setVisibility(View.INVISIBLE);*/
     }
 
     private void setListener() {
@@ -107,7 +107,7 @@ public class RegistActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus){
-                    img1.setVisibility(View.VISIBLE);
+                    //img1.setVisibility(View.VISIBLE);
                     String name=username_edit.getText().toString();
                     if (!checkUsername(name) && !name.equals("")){
                         //imageView.setImageResource(R.drawable.valid);

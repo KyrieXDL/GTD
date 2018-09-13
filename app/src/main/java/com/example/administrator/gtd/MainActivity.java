@@ -58,7 +58,8 @@ import com.example.administrator.gtd.animator.MoonAnim1;
 import com.example.administrator.gtd.animator.MoonAnim2;
 import com.example.administrator.gtd.animator.SunAnim;
 import com.example.administrator.gtd.animator.SunAnim_Lines;
-import com.example.administrator.gtd.reiview_module.ReviewActivity;
+import com.example.administrator.gtd.navigation.HistoryActivity;
+
 import com.example.administrator.gtd.user_info.UserInfoActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -337,7 +338,9 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                         break;
 
                     case R.id.review:
-                        Intent intentReview=new Intent(MainActivity.this, ReviewActivity.class);
+                        Intent intentReview=new Intent(MainActivity.this, HistoryActivity.class);
+                        int mode0=sharedPreferences.getInt("mode",0);
+                        intentReview.putExtra("mode",mode0);
                         startActivity(intentReview);
                         break;
 

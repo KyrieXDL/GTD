@@ -29,6 +29,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -42,5 +43,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'com.jwenfeng.pulltorefresh:library:1.2.7'
     compile 'com.squareup.okhttp3:okhttp:3.11.0'
+    compile 'com.android.support:support-vector-drawable:25.3.1'
     testCompile 'junit:junit:4.12'
 }

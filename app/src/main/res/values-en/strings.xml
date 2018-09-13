@@ -37,4 +37,8 @@
     <string name="night_day_mode">NIGHT/DAY_MODE</string>
     <string name="language">ZH/EN_CHANGE</string>
 
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
 </resources>

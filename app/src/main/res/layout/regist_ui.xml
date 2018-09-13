@@ -65,12 +65,6 @@
 
                    </android.support.design.widget.TextInputLayout>
 
-                   <ImageView
-                       android:id="@+id/img1"
-                       android:src="@drawable/invalid"
-                       android:layout_width="20dp"
-                       android:layout_height="20dp"
-                       android:layout_toRightOf="@+id/input_username"/>
                </RelativeLayout>
                <LinearLayout
                    android:paddingStart="50dp"
@@ -98,13 +92,6 @@
                            />
                    </android.support.design.widget.TextInputLayout>
 
-                   <ImageView
-                       android:id="@+id/img2"
-
-                       android:src="@drawable/invalid"
-                       android:layout_width="20dp"
-                       android:layout_height="20dp"
-                       android:layout_toRightOf="@+id/input_username"/>
                </LinearLayout>
                <LinearLayout
                    android:paddingStart="50dp"
@@ -132,13 +119,7 @@
                            />
                    </android.support.design.widget.TextInputLayout>
 
-                   <ImageView
-                       android:id="@+id/img3"
 
-                       android:src="@drawable/invalid"
-                       android:layout_width="20dp"
-                       android:layout_height="20dp"
-                       android:layout_toRightOf="@+id/input_username"/>
                </LinearLayout>
                <Button
                    android:layout_marginTop="20dp"
