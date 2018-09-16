@@ -73,6 +73,12 @@
     <string name="title_dashboard">历史</string>
     <string name="title_notifications">通知</string>
 
+    <string name="button_text_start">开始</string>
+    <string name="button_text_redo">重新完成</string>
+
+    <string name="button_text_start_en">START</string>
+    <string name="button_text_redo_en">REDO</string>
+
     <item name="visible" type="id" />
     <item name="masked" type="id" />
 </resources>

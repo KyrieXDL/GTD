@@ -9,23 +9,29 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.administrator.gtd.MainActivity;
 import com.example.administrator.gtd.R;
+import com.example.administrator.gtd.ThemeManager;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -46,7 +52,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import com.google.gson.reflect.TypeToken;
 
-public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener{
+public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener, ThemeManager.OnThemeChangeListener{
     private Button button;
     private Button button1;
     private Button button2;
@@ -60,31 +66,20 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private String sex="-1";
     private int userid;
     private CircleImageView circleImageView;
+
+    private LinearLayout linearLayout;
+    private RelativeLayout relativeLayout;
+
+    private TextView textName;
+    private TextView textAddress;
+    private TextView textTele;
+    private TextView textSex;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
-        button=(Button) findViewById(R.id.button);  //打开相册
-        button1=(Button) findViewById(R.id.button1);  //打开相机
-        button2=(Button) findViewById(R.id.button2);  //取消
-        //head_image=(ImageView) findViewById(R.id.head);//头像
-        edit_name=(EditText) findViewById(R.id.edit_name);
-        edit_address=(EditText) findViewById(R.id.edit_address);
-        edit_tele=(EditText) findViewById(R.id.edit_tele);
-        upload_button=(Button) findViewById(R.id.upload);
-        radioGroup=(RadioGroup) findViewById(R.id.radio_group);
-        radioButton1=(RadioButton) findViewById(R.id.man);
-        radioButton2=(RadioButton) findViewById(R.id.woman);
 
-        //head_image.setOnClickListener(this);
-        button.setOnClickListener(this);
-        button1.setOnClickListener(this);
-        button2.setOnClickListener(this);
-        upload_button.setOnClickListener(this);
-
-        button.setVisibility(View.INVISIBLE);
-        button2.setVisibility(View.INVISIBLE);
-        button1.setVisibility(View.INVISIBLE);
+        initView();
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
@@ -115,6 +110,81 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         new  MyQueryTask().execute("http://120.79.7.33/gtd/queryuserinfo.php?userid="+userid);
+
+        int mode=intent.getIntExtra("mode",0);
+
+        if (mode==1){
+            ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+            relativeLayout.setBackground(getApplicationContext().getDrawable(R.drawable.night_bg));
+        }else{
+            ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
+            relativeLayout.setBackground(getApplicationContext().getDrawable(R.drawable.day_bg));
+        }
+        initTheme();
+    }
+
+    @Override
+    public void onThemeChanged() {
+        initTheme();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ThemeManager.unregisterThemeChangeListener(this);
+    }
+    public void initTheme(){
+        // 设置标题栏颜色
+        /*if(supportActionBar != null){
+            supportActionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(ThemeManager.getCurrentThemeRes(ExpandableListView.this, R.color.colorPrimary))));
+        }*/
+        // 设置状态栏颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.setStatusBarColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.colorPrimary)));
+        }
+
+        linearLayout.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.backgroundColor)));
+        edit_tele.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        edit_address.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        edit_name.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        textName.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        textTele.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        textAddress.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        textSex.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        radioButton1.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+        radioButton2.setTextColor(getResources().getColor(ThemeManager.getCurrentThemeRes(UserInfoActivity.this, R.color.itemColor)));
+
+    }
+
+    public void initView(){
+
+        button=(Button) findViewById(R.id.button);  //打开相册
+        button1=(Button) findViewById(R.id.button1);  //打开相机
+        button2=(Button) findViewById(R.id.button2);  //取消
+        //head_image=(ImageView) findViewById(R.id.head);//头像
+        edit_name=(EditText) findViewById(R.id.edit_name);
+        edit_address=(EditText) findViewById(R.id.edit_address);
+        edit_tele=(EditText) findViewById(R.id.edit_tele);
+        upload_button=(Button) findViewById(R.id.upload);
+        radioGroup=(RadioGroup) findViewById(R.id.radio_group);
+        radioButton1=(RadioButton) findViewById(R.id.man);
+        radioButton2=(RadioButton) findViewById(R.id.woman);
+        linearLayout=(LinearLayout) findViewById(R.id.linearlayout);
+        relativeLayout=(RelativeLayout) findViewById(R.id.relative);
+        textName=(TextView) findViewById(R.id.text_name);
+        textAddress=(TextView) findViewById(R.id.text_address);
+        textTele=(TextView) findViewById(R.id.text_tele);
+        textSex=(TextView) findViewById(R.id.text_sex);
+
+        //head_image.setOnClickListener(this);
+        button.setOnClickListener(this);
+        button1.setOnClickListener(this);
+        button2.setOnClickListener(this);
+        upload_button.setOnClickListener(this);
+
+        button.setVisibility(View.INVISIBLE);
+        button2.setVisibility(View.INVISIBLE);
+        button1.setVisibility(View.INVISIBLE);
     }
 
     @Override

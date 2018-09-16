@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:background="@color/color5"
+    android:id="@+id/relative_layout"
+    tools:context="com.example.administrator.gtd.inbox.InboxActivity">
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:textSize="25sp"
+
+        android:popupBackground="@color/background"
+        android:spinnerMode="dialog"
+        >
+    </Spinner>
+
+    <ImageView
+        android:layout_above="@+id/viewpager"
+        android:src="@drawable/alarm"
+        android:layout_centerHorizontal="true"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginBottom="30dp"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:clipChildren="false"></android.support.v4.view.ViewPager>
+
+</RelativeLayout>

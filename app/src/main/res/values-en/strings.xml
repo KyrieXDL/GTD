@@ -41,4 +41,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
+    <string name="button_text_start">START</string>
+    <string name="button_text_redo">REDO</string>
+
 </resources>

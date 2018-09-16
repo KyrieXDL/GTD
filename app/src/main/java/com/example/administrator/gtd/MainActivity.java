@@ -47,6 +47,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +59,7 @@ import com.example.administrator.gtd.animator.MoonAnim1;
 import com.example.administrator.gtd.animator.MoonAnim2;
 import com.example.administrator.gtd.animator.SunAnim;
 import com.example.administrator.gtd.animator.SunAnim_Lines;
+import com.example.administrator.gtd.inbox.InboxActivity;
 import com.example.administrator.gtd.navigation.HistoryActivity;
 
 import com.example.administrator.gtd.user_info.UserInfoActivity;
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     private CircleImageView circleImageView;
 
     private int userid;
+    private RelativeLayout header_bg;
+    private View headview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         });
 
         //加载头像图片
-        View headview=navigationView.inflateHeaderView(R.layout.header);
+        //View headview=navigationView.inflateHeaderView(R.layout.header);
         circleImageView=(CircleImageView) headview.findViewById(R.id.header_img);
         String imgurl="http://120.79.7.33/gtd/load.php?userid="+userid;
         Glide.with(MainActivity.this).load(imgurl).error(R.drawable.head_img).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(circleImageView);
@@ -184,6 +188,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                 //设置点击头像后的事件
                 Intent intent1=new Intent(MainActivity.this, UserInfoActivity.class);
                 intent1.putExtra("userid",userid);
+                int mode=sharedPreferences.getInt("mode",0);
+                intent1.putExtra("mode",mode);
                 startActivity(intent1);
             }
         });
@@ -281,12 +287,12 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                     case R.id.inbox_item:
                         Intent intent;
                         if (list.size()>0) {
-                            intent = new Intent(MainActivity.this, ExpandableListView.class);
+                            intent = new Intent(MainActivity.this, InboxActivity.class);
                             int mode0=sharedPreferences.getInt("mode",0);
                             intent.putExtra("mode",mode0);
                             startActivity(intent);
                         }else{
-                            intent = new Intent(MainActivity.this, EmptyExpandableListActivity.class);
+                            intent = new Intent(MainActivity.this, InboxActivity.class);
                             startActivity(intent);
                         }
                         //SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
@@ -302,9 +308,11 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             mode=1;
                             changeToNight_Anim();
                             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+                            header_bg.setBackground(MainActivity.this.getDrawable(R.drawable.night_bg));
                         }else{
                             mode=0;
                             ValueAnimator animatorSet=changeToDay_Anim();
+                            header_bg.setBackground(MainActivity.this.getDrawable(R.drawable.day_bg));
 
                             animatorSet.addListener(new Animator.AnimatorListener() {
                                 @Override
@@ -400,6 +408,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
+        headview=navigationView.inflateHeaderView(R.layout.header);
+        header_bg=(RelativeLayout) headview.findViewById(R.id.header_bg);
 
         //初始化删除和全选按钮为不可见
         deleteButton=(Button) findViewById(R.id.delete_button);

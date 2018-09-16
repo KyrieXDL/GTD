@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView android:id="@+id/cardview"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:cardCornerRadius="10dp"
+    app:cardUseCompatPadding="true"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+
+        >
+
+        <TextView
+            android:id="@+id/num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1/5"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"/>
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_below="@+id/num"
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2018-9-6 12:32"/>
+
+            <FrameLayout
+                android:id="@+id/framelayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true">
+
+                <ImageView
+                    android:src="@drawable/ic_bookmark_24dp"
+                    android:layout_width="60dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="-10dp"
+                    />
+                <ImageView
+                    android:src="@drawable/done"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+            </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="我是一个TextView"/>
+
+        <Button
+            android:id="@+id/button_do"
+            android:layout_width="96dp"
+            android:layout_height="36dp"
+            android:textColor="#ffffff"
+
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"
+            android:background="@color/colorAccent"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:text="@string/button_text_start"/>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

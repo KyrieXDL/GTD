@@ -629,7 +629,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Toast.makeText(ContentActivity.this, s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ContentActivity.this, s, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject object = new JSONObject(s);
@@ -655,7 +655,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Toast.makeText(ContentActivity.this, s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ContentActivity.this, s, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject object = new JSONObject(s);
