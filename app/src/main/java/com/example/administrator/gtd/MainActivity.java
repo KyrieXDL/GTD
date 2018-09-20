@@ -185,9 +185,11 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "clicked image", Toast.LENGTH_SHORT).show();
+                Intent intent0=getIntent();
                 //设置点击头像后的事件
                 Intent intent1=new Intent(MainActivity.this, UserInfoActivity.class);
                 intent1.putExtra("userid",userid);
+                intent1.putExtra("name",intent0.getStringExtra("name"));
                 int mode=sharedPreferences.getInt("mode",0);
                 intent1.putExtra("mode",mode);
                 startActivity(intent1);
@@ -292,8 +294,9 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             intent.putExtra("mode",mode0);
                             startActivity(intent);
                         }else{
-                            intent = new Intent(MainActivity.this, InboxActivity.class);
-                            startActivity(intent);
+                            /*intent = new Intent(MainActivity.this, InboxActivity.class);
+                            startActivity(intent);*/
+                            Toast.makeText(MainActivity.this, "暂未添加事件", Toast.LENGTH_SHORT).show();
                         }
                         //SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
                         break;

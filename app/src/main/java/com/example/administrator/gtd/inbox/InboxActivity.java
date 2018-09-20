@@ -1,5 +1,6 @@
 package com.example.administrator.gtd.inbox;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -115,7 +116,7 @@ public class InboxActivity extends AppCompatActivity implements ThemeManager.OnT
                             int mode0=sharedPreferences0.getInt("mode",0);
                             intent.putExtra("mode",mode0);
 
-                            startActivity(intent);
+                            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(InboxActivity.this, viewPager, "sharedView").toBundle());
 
                         }
                         break ;

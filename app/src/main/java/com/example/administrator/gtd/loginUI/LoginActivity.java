@@ -17,6 +17,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.gtd.MainActivity;
@@ -56,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
     private String password="";
     private ActivityOptionsCompat oc2;
 
+    private TextView getPassword;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         btGo =(Button) findViewById(R.id.bt_go);
         cv =(CardView) findViewById(R.id.cv);
         fab =(FloatingActionButton) findViewById(R.id.fab);
+        getPassword=(TextView) findViewById(R.id.getPassword);
         /*supportActionBar = getSupportActionBar();
         ActionBar actionBar=getSupportActionBar();
         if(actionBar!=null){
@@ -117,6 +121,14 @@ public class LoginActivity extends AppCompatActivity {
                 getWindow().setEnterTransition(null);
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this, fab, fab.getTransitionName());
                 startActivity(new Intent(LoginActivity.this, RegistActivity.class), ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this, fab, "loginFab").toBundle());
+            }
+        });
+
+        getPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(LoginActivity.this,GetPasswordActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -213,10 +225,12 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(s);
            // Toast.makeText(getActivity(),""+s,Toast.LENGTH_LONG).show();
             int id=0;
+            String name="";
             try{
                 JSONObject object=new JSONObject(s);
                 res=object.getInt("res");
                 msg=object.getString("msg");
+                name=object.getString("name");
                 id=object.getInt("id");
             }catch (Exception e){
                 e.printStackTrace();
@@ -227,6 +241,7 @@ public class LoginActivity extends AppCompatActivity {
                // Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
                 Intent intent=new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("userid",id);
+                intent.putExtra("name",name);
                 Explode explode = new Explode();
                 explode.setDuration(500);
 

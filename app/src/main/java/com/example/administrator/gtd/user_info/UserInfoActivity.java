@@ -32,6 +32,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.administrator.gtd.MainActivity;
 import com.example.administrator.gtd.R;
 import com.example.administrator.gtd.ThemeManager;
+import com.example.administrator.gtd.loginUI.RegistActivity;
+import com.example.administrator.gtd.loginUI.User;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -40,6 +42,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -74,6 +77,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private TextView textAddress;
     private TextView textTele;
     private TextView textSex;
+
+    private List<User> list=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +97,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-
+        String url="http://120.79.7.33/gtd/queryuser.php";
+        new CheckTask().execute(url);
         Intent intent=getIntent();
         int userid =intent.getIntExtra("userid",0);
 
@@ -112,6 +118,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         new  MyQueryTask().execute("http://120.79.7.33/gtd/queryuserinfo.php?userid="+userid);
 
         int mode=intent.getIntExtra("mode",0);
+        String name=intent.getStringExtra("name");
+        edit_name.setText(name);
 
         if (mode==1){
             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
@@ -210,7 +218,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
                 if (name.equals("")||tele.equals("")||address.equals("")||sex.equals("-1")){
                     Toast.makeText(this, "信息不能为空", Toast.LENGTH_SHORT).show();
+                }else if(tele.length()!=11){
+                    Toast.makeText(this, "电话号码格式不对", Toast.LENGTH_SHORT).show();
+                }else if(checkPhone(tele)){
+                    Toast.makeText(this, "该电话号码已注册", Toast.LENGTH_SHORT).show();
                 }else {
+
                     Intent intent = getIntent();
                     int userid = intent.getIntExtra("userid", 0);
                     String url = "http://120.79.7.33/gtd/adduserinfo.php";
@@ -218,6 +231,28 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
         }
+    }
+
+    private boolean checkUsername(String username){
+        for (int i=0;i<list.size();i++){
+            if (list.get(i).getName().equals(username)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean checkPhone(String phone){
+        for (int i=0;i<list.size();i++){
+            if (list.get(i).getPhone()!=null){
+                if (list.get(i).getPhone().equals(phone)){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private class MyTask extends AsyncTask<String,Integer,String>
@@ -284,6 +319,28 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    class CheckTask extends AsyncTask<String,Integer,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return com.example.administrator.gtd.HttpUtil.sendHttpRequest(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            try {
+                //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                Gson gson = new Gson();
+                Type type = new TypeToken<List<User>>() {}.getType();
+                list = gson.fromJson(s, type);
+                //Toast.makeText(UserInfoActivity.this, ""+list.get(0).getName()+" "+list.get(0).getPhone(), Toast.LENGTH_SHORT).show();
+            }catch (Exception e){
+                e.getMessage();
+            }
+        }
+    }
+
     class MyQueryTask extends AsyncTask<String,Integer,String> {
 
         @Override
@@ -299,7 +356,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 Gson gson = new Gson();
                 Type type = new TypeToken<List<Userinfo>>() {}.getType();
                 List<Userinfo> list = gson.fromJson(s, type);
-                edit_name.setText(list.get(0).getName());
+                //edit_name.setText(list.get(0).getName());
                 edit_address.setText(list.get(0).getAddress());
                 edit_tele.setText(list.get(0).getTele());
                 if (list.get(0).getSex().equals("1")){
@@ -385,7 +442,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     //Toast.makeText(this, "onActivityResult", Toast.LENGTH_SHORT).show();
                     String path=handleImageOnKitKat(data);
                     imagePath=path;
-                    //Toast.makeText(this, ""+imagePath, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, ""+imagePath, Toast.LENGTH_SHORT).show();*/
                     //ImageView imageView=(ImageView) findViewById(R.id.image);
                     displayImage(path);
                 }

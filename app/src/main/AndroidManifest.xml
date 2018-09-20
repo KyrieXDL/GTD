@@ -50,7 +50,8 @@
             android:name=".loginUI.RegistActivity"
             android:theme="@style/Translucent" />
         <activity android:name=".navigation.HistoryActivity" />
-        <activity android:name=".inbox.InboxActivity"></activity>
+        <activity android:name=".inbox.InboxActivity" />
+        <activity android:name=".loginUI.GetPasswordActivity"></activity>
     </application>
 
 </manifest>
