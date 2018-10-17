@@ -2,8 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="?attr/mainBackground">
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/activity_gif_giv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/alarm_gif"/>
+
     <TextView
         android:id="@+id/alarm_text"
         android:layout_width="match_parent"
@@ -13,23 +21,17 @@
         android:text="要做的事情"
         android:textSize="24sp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-        <Button
-            android:id="@+id/do_it_now"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="现在就做"/>
 
-        <Button
-            android:id="@+id/do_it_later"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="稍后在做"/>
-    </LinearLayout>
+    <com.github.chengang.library.TickView
+        android:id="@+id/tick_view_accent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        app:check_base_color="@color/colorAccent"
+        app:rate="normal" />
+
+
 
 </RelativeLayout>

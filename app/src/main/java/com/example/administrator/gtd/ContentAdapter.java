@@ -86,11 +86,11 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 int position=holder.getAdapterPosition();
                 Content content=list.get(position);
 
-                if (content.isDone()){
+                /*if (content.isDone()){
                 Toast.makeText(context, "done", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(context, "not done", Toast.LENGTH_SHORT).show();
-                }
+                }*/
                 if (!content.isShow()){
                     Intent intent=new Intent(context,ContentActivity.class);
                     intent.putExtra("content0",content.getMsg());

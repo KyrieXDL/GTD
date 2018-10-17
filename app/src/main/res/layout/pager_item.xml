@@ -64,17 +64,20 @@
             android:gravity="center"
             android:text="我是一个TextView"/>
 
-        <Button
-            android:id="@+id/button_do"
-            android:layout_width="96dp"
-            android:layout_height="36dp"
-            android:textColor="#ffffff"
 
+        <com.dd.CircularProgressButton
+            android:id="@+id/btnWithText"
+            android:layout_width="106dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:background="@color/colorAccent"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="20dp"
-            android:text="@string/button_text_start"/>
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:cpb_cornerRadius="48dp"
+            app:cpb_textComplete="@string/button_text_redo"
+            app:cpb_textError="Error"
+            app:cpb_textIdle="@string/button_text_start" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

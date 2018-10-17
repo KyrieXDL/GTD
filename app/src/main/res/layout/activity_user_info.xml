@@ -7,132 +7,141 @@
     tools:context="com.example.administrator.gtd.user_info.UserInfoActivity">
 
     <RelativeLayout
-        android:id="@+id/relative"
+        android:id="@+id/user"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:padding="10dp"
-        android:background="@drawable/day_bg">
+        android:layout_height="wrap_content"
+        >
+        <RelativeLayout
+            android:id="@+id/relative"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:padding="10dp"
+            android:background="@drawable/day_bg">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/head"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/head_img"
-            android:layout_centerInParent="true"
-            />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/head"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/head_img"
+                android:layout_centerInParent="true"
+                />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/linearlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/text_name"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="姓名:"
+                    android:textSize="20sp"/>
+                <EditText
+                    android:id="@+id/edit_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/text_address"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="地址:"
+                    android:textSize="20sp"/>
+                <EditText
+                    android:id="@+id/edit_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/text_tele"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="电话:"
+                    android:textSize="20sp"/>
+                <EditText
+                    android:id="@+id/edit_tele"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/text_sex"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="性别:"
+                    android:textSize="20sp"/>
+
+                <RadioGroup
+                    android:id="@+id/radio_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/man"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="男"/>
+                    <RadioButton
+                        android:id="@+id/woman"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="女"/>
+                </RadioGroup>
+            </LinearLayout>
+
+        </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/linearlayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/relative"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/text_name"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="姓名:"
-                android:textSize="20sp"/>
-            <EditText
-                android:id="@+id/edit_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/text_address"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="地址:"
-                android:textSize="20sp"/>
-            <EditText
-                android:id="@+id/edit_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/text_tele"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="电话:"
-                android:textSize="20sp"/>
-            <EditText
-                android:id="@+id/edit_tele"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/text_sex"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="性别:"
-                android:textSize="20sp"/>
-
-            <RadioGroup
-                android:id="@+id/radio_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <RadioButton
-                    android:id="@+id/man"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="男"/>
-                <RadioButton
-                    android:id="@+id/woman"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="女"/>
-            </RadioGroup>
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/upload"
+    <com.dd.CircularProgressButton
+        android:id="@+id/btnWithText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="60dp"
         android:layout_marginRight="60dp"
-        android:text="保存修改"
-        android:background="@drawable/dialog_shape"/>
+        android:layout_marginBottom="5dp"
+        app:cpb_cornerRadius="48dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:cpb_textComplete="Complete"
+        app:cpb_textError="Error"
+        app:cpb_textIdle="保存修改" />
+
+    >
 
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="60dp"
-        android:layout_marginRight="60dp"
         android:text="打开相册"
-        android:background="@drawable/dialog_shape"/>
+        android:background="@drawable/dialog_shape" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="60dp"
-        android:layout_marginRight="60dp"
         android:text="打开相机"
         android:background="@drawable/dialog_shape"/>
 
@@ -141,8 +150,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="60dp"
-        android:layout_marginRight="60dp"
         android:text="取消"
         android:background="@drawable/dialog_shape"/>
 

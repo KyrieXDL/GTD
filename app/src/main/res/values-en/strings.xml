@@ -43,5 +43,6 @@
 
     <string name="button_text_start">START</string>
     <string name="button_text_redo">REDO</string>
+    <string name="nodata">There is no content added</string>
 
 </resources>

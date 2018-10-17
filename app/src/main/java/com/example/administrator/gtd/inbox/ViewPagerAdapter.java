@@ -68,24 +68,32 @@ public class ViewPagerAdapter extends  PagerAdapter{
         timeView.setText(content.getAlarmTime());
 
         final FrameLayout frameLayout=(FrameLayout) view.findViewById(R.id.framelayout);
-        final Button button=(Button) view.findViewById(R.id.button_do);
+        //final Button button=(Button) view.findViewById(R.id.button_do);
+        final com.dd.CircularProgressButton circularProgressButton=(com.dd.CircularProgressButton) view.findViewById(R.id.btnWithText);
         if (content.isDone()){
-            frameLayout.setVisibility(View.VISIBLE);
-            button.setText(context.getString(R.string.button_text_redo));
-        }else{
-            frameLayout.setVisibility(View.INVISIBLE);
-            button.setText(context.getString(R.string.button_text_start));
-        }
 
-        button.setOnClickListener(new View.OnClickListener() {
+            circularProgressButton.setText(context.getString(R.string.button_text_redo));
+            circularProgressButton.setProgress(100);
+            frameLayout.setVisibility(View.VISIBLE);
+            //button.setText(context.getString(R.string.button_text_redo));
+        }else{
+
+            circularProgressButton.setProgress(0);
+            frameLayout.setVisibility(View.INVISIBLE);
+            //button.setText(context.getString(R.string.button_text_start));
+        }
+        circularProgressButton.setIndeterminateProgressMode(true); // turn on indeterminate progress
+        circularProgressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (button.getText().toString().equals(context.getString(R.string.button_text_start))){
+                if (circularProgressButton.getText().toString().equals(context.getString(R.string.button_text_start))){
                     //Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
+                    circularProgressButton.setProgress(1); // set progress to 0 to switch back to normal state
+                    circularProgressButton.setProgress(100);
                     String updateurl="http://120.79.7.33/update3.php?contentid="+content.getContentid();
                     new MyUpdateTask().execute(updateurl);
                     frameLayout.setVisibility(View.VISIBLE);
-                    button.setText(context.getString(R.string.button_text_redo));
+                    circularProgressButton.setText(context.getString(R.string.button_text_redo));
                     ContentValues value=new ContentValues();
                     value.put("isdone",true);
                     DataSupport.updateAll(Content.class,value,"contentid=?",content.getContentid()+"");

@@ -57,8 +57,13 @@ public class GetPasswordActivity extends AppCompatActivity {
         getCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url="http://120.79.7.33/gtd/sms_curl.php?phone="+et_phone.getText().toString();
-                new GetCodeTask().execute(url);
+                String phone=et_phone.getText().toString();
+                if (phone.length()!=11){
+                    Toast.makeText(GetPasswordActivity.this, "电话格式错误", Toast.LENGTH_SHORT).show();
+                }else {
+                    String url = "http://120.79.7.33/gtd/sms_curl.php?phone=" + et_phone.getText().toString();
+                    new GetCodeTask().execute(url);
+                }
 
             }
         });
@@ -144,8 +149,8 @@ public class GetPasswordActivity extends AppCompatActivity {
         protected void onPostExecute(String s){
             super.onPostExecute(s);
 
-            myCountDownTimer.start();
             if (s.equals("100")){
+                myCountDownTimer.start();
                 Toast.makeText(GetPasswordActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
             }else if(s.equals("121")){
                 Toast.makeText(GetPasswordActivity.this, "手机号码错误", Toast.LENGTH_SHORT).show();

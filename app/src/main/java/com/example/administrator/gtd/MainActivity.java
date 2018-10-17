@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
     private int userid;
     private RelativeLayout header_bg;
     private View headview;
+    private TextView username_text;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
         initialView();
         setListener();
+
+        username_text.setText(intent.getStringExtra("name"));
 
 
     }
@@ -179,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         //加载头像图片
         //View headview=navigationView.inflateHeaderView(R.layout.header);
         circleImageView=(CircleImageView) headview.findViewById(R.id.header_img);
+        username_text=(TextView) headview.findViewById(R.id.username);
         String imgurl="http://120.79.7.33/gtd/load.php?userid="+userid;
         Glide.with(MainActivity.this).load(imgurl).error(R.drawable.head_img).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(circleImageView);
         circleImageView.setOnClickListener(new View.OnClickListener() {

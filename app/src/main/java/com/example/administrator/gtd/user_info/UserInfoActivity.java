@@ -12,6 +12,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,7 +62,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private Button button;
     private Button button1;
     private Button button2;
-    private Button upload_button;
+    //private Button upload_button;
     private String imagePath="";
     private ImageView head_image;
     private int flag=1;
@@ -77,8 +80,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private TextView textAddress;
     private TextView textTele;
     private TextView textSex;
-
+    //private com.dd.CircularProgressButton circularProgressButton;
     private List<User> list=new ArrayList<>();
+
+    private com.dd.CircularProgressButton circularProgressButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +134,32 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             relativeLayout.setBackground(getApplicationContext().getDrawable(R.drawable.day_bg));
         }
         initTheme();
+
+        circularProgressButton=(com.dd.CircularProgressButton) findViewById(R.id.btnWithText);
+        circularProgressButton.setIndeterminateProgressMode(true); // turn on indeterminate progress
+        circularProgressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name=edit_name.getText().toString();
+                String tele=edit_tele.getText().toString();
+                String address=edit_address.getText().toString();
+
+                if (name.equals("")||tele.equals("")||address.equals("")||sex.equals("-1")){
+                    Toast.makeText(UserInfoActivity.this, "信息不能为空", Toast.LENGTH_SHORT).show();
+                }else if(tele.length()!=11){
+                    Toast.makeText(UserInfoActivity.this, "电话号码格式不对", Toast.LENGTH_SHORT).show();
+                }else if(checkPhone(tele)){
+                    Toast.makeText(UserInfoActivity.this, "该电话号码已注册", Toast.LENGTH_SHORT).show();
+                }else {
+
+                    circularProgressButton.setProgress(1); // set progress to 0 to switch back to normal state
+                    Intent intent = getIntent();
+                    int userid = intent.getIntExtra("userid", 0);
+                    String url = "http://120.79.7.33/gtd/adduserinfo.php";
+                    new MyTask().execute(name, address, tele, sex, "" + userid, url, imagePath);
+                }
+            }
+        });
     }
 
     @Override
@@ -173,7 +204,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         edit_name=(EditText) findViewById(R.id.edit_name);
         edit_address=(EditText) findViewById(R.id.edit_address);
         edit_tele=(EditText) findViewById(R.id.edit_tele);
-        upload_button=(Button) findViewById(R.id.upload);
+        //upload_button=(Button) findViewById(R.id.upload);
         radioGroup=(RadioGroup) findViewById(R.id.radio_group);
         radioButton1=(RadioButton) findViewById(R.id.man);
         radioButton2=(RadioButton) findViewById(R.id.woman);
@@ -188,11 +219,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         button.setOnClickListener(this);
         button1.setOnClickListener(this);
         button2.setOnClickListener(this);
-        upload_button.setOnClickListener(this);
+        //upload_button.setOnClickListener(this);
 
         button.setVisibility(View.INVISIBLE);
         button2.setVisibility(View.INVISIBLE);
         button1.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -204,13 +236,14 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 button.setVisibility(View.INVISIBLE);
                 button2.setVisibility(View.INVISIBLE);
                 button1.setVisibility(View.INVISIBLE);
+                circularProgressButton.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.button2:
                 endAnim();
                 break;
 
-            case R.id.upload:
+            /*case R.id.upload:
 
                 String name=edit_name.getText().toString();
                 String tele=edit_tele.getText().toString();
@@ -224,12 +257,13 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(this, "该电话号码已注册", Toast.LENGTH_SHORT).show();
                 }else {
 
+                    circularProgressButton.setProgress(1); // set progress to 0 to switch back to normal state
                     Intent intent = getIntent();
                     int userid = intent.getIntExtra("userid", 0);
                     String url = "http://120.79.7.33/gtd/adduserinfo.php";
                     new MyTask().execute(name, address, tele, sex, "" + userid, url, imagePath);
                 }
-                break;
+                break;*/
         }
     }
 
@@ -308,8 +342,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 int result = jsonObject.getInt("res");
                 if(result==1){
                     Toast.makeText(UserInfoActivity.this, "Upload succeed!!", Toast.LENGTH_SHORT).show();
+                    circularProgressButton.setProgress(100);
                 }else{
                     Toast.makeText(UserInfoActivity.this , "Upload failed!!", Toast.LENGTH_SHORT).show();
+                    circularProgressButton.setProgress(-1);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -317,6 +353,14 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         }
 
+    }
+
+    private void setShadow(){
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.user, new ShadowFragment());
+        transaction.commit();
     }
 
     class CheckTask extends AsyncTask<String,Integer,String> {
@@ -376,19 +420,20 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void startAnim(){
-        button.setVisibility(View.VISIBLE);
-        button2.setVisibility(View.VISIBLE);
-        button1.setVisibility(View.VISIBLE);
-
+        button.setVisibility(View.VISIBLE);  //open album
+        button1.setVisibility(View.VISIBLE);  //open camera
+        button2.setVisibility(View.VISIBLE);  //cancel
+        circularProgressButton.setVisibility(View.INVISIBLE);
+        //setShadow();
         flag=0;
         float curTranslationY = button.getTranslationY();
         // 获得当前按钮的位置
-        ObjectAnimator animator = ObjectAnimator.ofFloat(button, "translationY", curTranslationY, -180);
-        animator.setDuration(1000);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(button, "translationY", curTranslationY, -(button2.getHeight()+10));
+        animator.setDuration(500);
         animator.start();
 
-        ObjectAnimator animator2 = ObjectAnimator.ofFloat(button1, "translationY", curTranslationY, -330);
-        animator2.setDuration(1000);
+        ObjectAnimator animator2 = ObjectAnimator.ofFloat(button1, "translationY", curTranslationY, -(button2.getHeight()*2+10));
+        animator2.setDuration(500);
         animator2.start();
     }
 
@@ -397,12 +442,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         float curTranslationY = button.getTranslationY();
         // 获得当前按钮的位置
-        ObjectAnimator animator = ObjectAnimator.ofFloat(button, "translationY", curTranslationY,180);
-        animator.setDuration(1000);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(button, "translationY", curTranslationY,button2.getHeight()+10);
+        animator.setDuration(500);
         animator.start();
 
-        ObjectAnimator animator2 = ObjectAnimator.ofFloat(button1, "translationY",  curTranslationY,330);
-        animator2.setDuration(1000);
+        ObjectAnimator animator2 = ObjectAnimator.ofFloat(button1, "translationY",  curTranslationY,button2.getHeight()*2+10);
+        animator2.setDuration(500);
         animator2.start();
 
         animator2.addListener(new Animator.AnimatorListener() {
@@ -419,6 +464,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 button.setVisibility(View.INVISIBLE);
                 button2.setVisibility(View.INVISIBLE);
                 button1.setVisibility(View.INVISIBLE);
+                circularProgressButton.setVisibility(View.VISIBLE);
             }
 
             @Override

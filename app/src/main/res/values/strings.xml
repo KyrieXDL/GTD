@@ -76,6 +76,8 @@
     <string name="button_text_start">开始</string>
     <string name="button_text_redo">重新完成</string>
 
+    <string name="nodata">暂未添加事件</string>
+
     <string name="button_text_start_en">START</string>
     <string name="button_text_redo_en">REDO</string>
 
