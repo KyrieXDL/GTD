@@ -45,4 +45,15 @@
     <string name="button_text_redo">REDO</string>
     <string name="nodata">There is no content added</string>
 
+
+    <string name="save">save change</string>
+    <string name="name">name</string>
+    <string name="address">address</string>
+    <string name="phone">phone</string>
+    <string name="sex">sex</string>
+    <string name="man">man</string>
+    <string name="woman">woman</string>
+    <string name="open_album">open album</string>
+    <string name="open_camera">open camera</string>
+
 </resources>

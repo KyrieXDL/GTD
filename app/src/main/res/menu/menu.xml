@@ -6,28 +6,26 @@
         android:id="@+id/group1">
         <item
             android:id="@+id/inbox_item"
-            android:title="@string/inbox" />
+            android:title="@string/inbox"
+            android:icon="@drawable/inbox"/>
         <item
             android:id="@+id/set_item"
-            android:title="@string/set"/>
+            android:title="@string/set"
+            android:icon="@drawable/set"/>
         <item
             android:id="@+id/review"
-            android:title="@string/review"/>
+            android:title="@string/review"
+            android:icon="@drawable/review"/>
     </group>
-    <group
-        android:checkableBehavior="single"
-        android:id="@+id/group2">
-        <item
-            android:id="@+id/recycle_bin"
-            android:title="@string/recycle_bin"/>
-    </group>
+
 
     <group
         android:checkableBehavior="single"
         android:id="@+id/group3">
         <item
             android:id="@+id/mode"
-            android:title="@string/night_day_mode" >
+            android:title="@string/night_day_mode"
+            android:icon="@drawable/night">
         </item>
 
     </group>
@@ -37,7 +35,8 @@
         android:id="@+id/group4">
         <item
             android:id="@+id/language"
-            android:title="@string/language" >
+            android:title="@string/language"
+            android:icon="@drawable/cn_en">
         </item>
 
     </group>

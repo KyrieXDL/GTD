@@ -36,6 +36,7 @@ public class AlarmActivity extends AppCompatActivity {
     //private Button do_it_later;
     //private GifImageView imageView;
     private com.github.chengang.library.TickView tickView;
+    private int flag=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,16 +74,20 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(TickView tickView, boolean isCheck) {
                 //do something here
-                ContentValues value=new ContentValues();
-                value.put("isdone",true);
-                //DataSupport.updateAll(Content.class,value,"msg=?",content);
-                //发送请求更新服务端数据
-                String updateurl="http://120.79.7.33/update3.php?contentid="+num;
-                new MyUpdateTask().execute(updateurl);
-                //DataSupport.update(Content.class,value,num);
-                //更新本地数据
-                DataSupport.updateAll(Content.class,value,"contentid=?",num+"");
+                if (flag==0) {
+                    ContentValues value = new ContentValues();
+                    value.put("isdone", true);
+                    //DataSupport.updateAll(Content.class,value,"msg=?",content);
+                    //发送请求更新服务端数据
+                    String updateurl = "http://120.79.7.33/update3.php?contentid=" + num;
+                    new MyUpdateTask().execute(updateurl);
+                    //DataSupport.update(Content.class,value,num);
+                    //更新本地数据
+                    DataSupport.updateAll(Content.class, value, "contentid=?", num + "");
+                    flag=1;
+                }else{
 
+                }
             }
         });
     }

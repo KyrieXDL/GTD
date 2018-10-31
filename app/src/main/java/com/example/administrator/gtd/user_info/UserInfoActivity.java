@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,7 +43,10 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -66,6 +70,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private String imagePath="";
     private ImageView head_image;
     private int flag=1;
+    private int tag=0;
     private EditText edit_name,edit_tele,edit_address;
     private RadioGroup radioGroup;
     private RadioButton radioButton1,radioButton2;
@@ -84,6 +89,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private List<User> list=new ArrayList<>();
 
     private com.dd.CircularProgressButton circularProgressButton;
+    private Uri imageUri;
+    private static final int TAKE_PHOTO=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,7 +163,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     Intent intent = getIntent();
                     int userid = intent.getIntExtra("userid", 0);
                     String url = "http://120.79.7.33/gtd/adduserinfo.php";
-                    new MyTask().execute(name, address, tele, sex, "" + userid, url, imagePath);
+                    if (tag==1) {
+                        new MyTask().execute(name, address, tele, sex, "" + userid, url, imagePath);
+                    }else if( tag==2){
+                        //Toast.makeText(UserInfoActivity.this, imageUri.getPath()+"", Toast.LENGTH_SHORT).show();
+                        new MyTask().execute(name, address, tele, sex, "" + userid, url, imageUri.getPath());
+                    }
                 }
             }
         });
@@ -225,6 +237,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         button2.setVisibility(View.INVISIBLE);
         button1.setVisibility(View.INVISIBLE);
 
+        textName.setText(getResources().getText(R.string.name));
+        textSex.setText(getResources().getText(R.string.sex));
+        textAddress.setText(getResources().getText(R.string.address));
+        textTele.setText(getResources().getText(R.string.phone));
+
     }
 
     @Override
@@ -237,6 +254,16 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 button2.setVisibility(View.INVISIBLE);
                 button1.setVisibility(View.INVISIBLE);
                 circularProgressButton.setVisibility(View.VISIBLE);
+                tag=1;
+                break;
+
+            case R.id.button1:
+                openCamera();
+                button.setVisibility(View.INVISIBLE);
+                button2.setVisibility(View.INVISIBLE);
+                button1.setVisibility(View.INVISIBLE);
+                circularProgressButton.setVisibility(View.VISIBLE);
+                tag=2;
                 break;
 
             case R.id.button2:
@@ -265,6 +292,28 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;*/
         }
+    }
+
+    private void openCamera(){
+        File outputImage=new File(getExternalCacheDir(),"output_image.jpg");
+        try{
+            if(outputImage.exists()){
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        if (Build.VERSION.SDK_INT>=24){
+            imageUri= FileProvider.getUriForFile(UserInfoActivity.this,"com.example.gtd.fileprovider",outputImage);
+        }else{
+            imageUri=Uri.fromFile(outputImage);
+        }
+        Intent intent=new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+        startActivityForResult(intent,TAKE_PHOTO);
+
     }
 
     private boolean checkUsername(String username){
@@ -304,7 +353,19 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             Response response = null;
 
             OkHttpClient mOkHttpClent = new OkHttpClient();
-            File file = new File(path);
+            //File file = new File(path);
+            File file=new File(getExternalCacheDir(),"header_image.jpg");
+            try{
+                if(file.exists()){
+                    file.delete();
+                }
+                file.createNewFile();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            Bitmap bitmap=BitmapFactory.decodeFile(path);
+            qualityCompress(bitmap,file);
+            //File file = new File(path);
             MultipartBody.Builder builder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("img", file.getName(),
@@ -335,7 +396,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         protected  void onPostExecute(String s){
             super.onPostExecute(s);
-            Toast.makeText(UserInfoActivity.this, ""+s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(UserInfoActivity.this, ""+s, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject jsonObject = new JSONObject(s);
@@ -355,13 +416,30 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void setShadow(){
+    public static void qualityCompress(Bitmap bmp, File file) {
+        // 0-100 100为不压缩
+        int quality = 20;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // 把压缩后的数据存放到baos中
+        bmp.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(baos.toByteArray());
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /*private void setShadow(){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.user, new ShadowFragment());
         transaction.commit();
-    }
+    }*/
 
     class CheckTask extends AsyncTask<String,Integer,String> {
 
@@ -491,6 +569,16 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     //Toast.makeText(this, ""+imagePath, Toast.LENGTH_SHORT).show();*/
                     //ImageView imageView=(ImageView) findViewById(R.id.image);
                     displayImage(path);
+                }
+                break;
+            case TAKE_PHOTO:
+                if(resultCode==RESULT_OK){
+                    try {
+                        Bitmap bitmap=BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        circleImageView.setImageBitmap(bitmap);
+                    }catch (FileNotFoundException e){
+                        e.printStackTrace();
+                    }
                 }
                 break;
         }

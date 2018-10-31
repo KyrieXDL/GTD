@@ -36,7 +36,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 
-import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -188,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         circleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "clicked image", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "clicked image", Toast.LENGTH_SHORT).show();
                 Intent intent0=getIntent();
                 //设置点击头像后的事件
                 Intent intent1=new Intent(MainActivity.this, UserInfoActivity.class);
@@ -315,12 +314,13 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             mode=1;
                             changeToNight_Anim();
                             ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+                            item.setIcon(R.drawable.sun);
                             header_bg.setBackground(MainActivity.this.getDrawable(R.drawable.night_bg));
                         }else{
                             mode=0;
                             ValueAnimator animatorSet=changeToDay_Anim();
                             header_bg.setBackground(MainActivity.this.getDrawable(R.drawable.day_bg));
-
+                            item.setIcon(R.drawable.night);
                             animatorSet.addListener(new Animator.AnimatorListener() {
                                 @Override
                                 public void onAnimationStart(Animator animation) {
@@ -365,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                         //用if语句判断，如果当前为中文就变成英文，反之变成中文
                         if (ss.equals("zh")){
                             Locale.setDefault(Locale.ENGLISH);
+                            item.setIcon(R.drawable.cn_en);
                             Configuration configuration = getBaseContext().getResources().getConfiguration();
                             configuration.locale = Locale.ENGLISH;
                             getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
@@ -372,6 +373,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             changeLanguage(1);
                         }else {
                             Locale.setDefault(Locale.CHINESE);
+                            item.setIcon(R.drawable.en_cn);
                             Configuration configuration = getBaseContext().getResources().getConfiguration();
                             configuration.locale = Locale.CHINESE;
                             getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
@@ -780,9 +782,9 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             navigationView.getMenu().getItem(0).setTitle(getResources().getString(R.string.inbox));
             navigationView.getMenu().getItem(1).setTitle(getResources().getString(R.string.set));
             navigationView.getMenu().getItem(2).setTitle(getResources().getString(R.string.review));
-            navigationView.getMenu().getItem(3).setTitle(getResources().getString(R.string.recycle_bin));
-            navigationView.getMenu().getItem(4).setTitle(getResources().getString(R.string.night_day_mode));
-            navigationView.getMenu().getItem(5).setTitle(getResources().getString(R.string.language));
+           // navigationView.getMenu().getItem(3).setTitle(getResources().getString(R.string.recycle_bin));
+            navigationView.getMenu().getItem(3).setTitle(getResources().getString(R.string.night_day_mode));
+            navigationView.getMenu().getItem(4).setTitle(getResources().getString(R.string.language));
 
             menuItem.setTitle(getResources().getString(R.string.edit));
             selectButton.setText(getResources().getString(R.string.select_all));
@@ -793,9 +795,9 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
             navigationView.getMenu().getItem(0).setTitle(getResources().getString(R.string.inbox_en));
             navigationView.getMenu().getItem(1).setTitle(getResources().getString(R.string.set_en));
             navigationView.getMenu().getItem(2).setTitle(getResources().getString(R.string.review_en));
-            navigationView.getMenu().getItem(3).setTitle(getResources().getString(R.string.recycle_bin_en));
-            navigationView.getMenu().getItem(4).setTitle(getResources().getString(R.string.night_day_mode_en));
-            navigationView.getMenu().getItem(5).setTitle(getResources().getString(R.string.language_en));
+           // navigationView.getMenu().getItem(3).setTitle(getResources().getString(R.string.recycle_bin_en));
+            navigationView.getMenu().getItem(3).setTitle(getResources().getString(R.string.night_day_mode_en));
+            navigationView.getMenu().getItem(4).setTitle(getResources().getString(R.string.language_en));
 
             menuItem.setTitle(getResources().getString(R.string.edit_en));
             selectButton.setText(getResources().getString(R.string.select_all_en));

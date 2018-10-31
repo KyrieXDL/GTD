@@ -13,10 +13,10 @@
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
         android:configChanges="locale"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:persistent="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -43,7 +43,6 @@
         <activity android:name=".AlarmActivity" />
         <activity android:name=".ExpandableListView" />
         <activity android:name=".EmptyExpandableListActivity" />
-        <activity android:name=".reiview_module.ReviewActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".user_info.UserInfoActivity" />
         <activity
@@ -52,6 +51,16 @@
         <activity android:name=".navigation.HistoryActivity" />
         <activity android:name=".inbox.InboxActivity" />
         <activity android:name=".loginUI.GetPasswordActivity"></activity>
+
+        <provider
+            android:authorities="com.example.gtd.fileprovider"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
     </application>
 
 </manifest>

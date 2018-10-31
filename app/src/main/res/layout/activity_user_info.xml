@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/user"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         >
         <RelativeLayout
             android:id="@+id/relative"
@@ -30,7 +30,7 @@
         <LinearLayout
             android:id="@+id/linearlayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@+id/relative"
             android:orientation="vertical">
 
@@ -42,7 +42,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="姓名:"
+                    android:text="@string/name"
                     android:textSize="20sp"/>
                 <EditText
                     android:id="@+id/edit_name"
@@ -58,7 +58,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="地址:"
+                    android:text="@string/address"
                     android:textSize="20sp"/>
                 <EditText
                     android:id="@+id/edit_address"
@@ -73,7 +73,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="电话:"
+                    android:text="@string/phone"
                     android:textSize="20sp"/>
                 <EditText
                     android:id="@+id/edit_tele"
@@ -88,7 +88,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="性别:"
+                    android:text="@string/sex"
                     android:textSize="20sp"/>
 
                 <RadioGroup
@@ -100,12 +100,12 @@
                         android:id="@+id/man"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="男"/>
+                        android:text="@string/man"/>
                     <RadioButton
                         android:id="@+id/woman"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="女"/>
+                        android:text="@string/woman"/>
                 </RadioGroup>
             </LinearLayout>
 
@@ -125,7 +125,7 @@
         android:textSize="14sp"
         app:cpb_textComplete="Complete"
         app:cpb_textError="Error"
-        app:cpb_textIdle="保存修改" />
+        app:cpb_textIdle="@string/save" />
 
     >
 
@@ -134,7 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="打开相册"
+        android:text="@string/open_album"
         android:background="@drawable/dialog_shape" />
 
     <Button
@@ -142,7 +142,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="打开相机"
+        android:text="@string/open_camera"
         android:background="@drawable/dialog_shape"/>
 
     <Button
@@ -150,7 +150,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="取消"
+        android:text="@string/cancle"
         android:background="@drawable/dialog_shape"/>
 
 </RelativeLayout>

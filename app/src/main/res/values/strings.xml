@@ -37,6 +37,25 @@
     <string name="night_day_mode">夜间/日间模式</string>
     <string name="language">中文/英文切换</string>
 
+    <string name="save">保存修改</string>
+    <string name="save_en">save change</string>
+    <string name="name">姓名</string>
+    <string name="name_en">name</string>
+    <string name="address">地址</string>
+    <string name="address_en">address</string>
+    <string name="phone">电话</string>
+    <string name="phone_en">phone</string>
+    <string name="sex">性别</string>
+    <string name="sex_en">sex</string>
+    <string name="man">男</string>
+    <string name="man_en">man</string>
+    <string name="woman">女</string>
+    <string name="woman_en">woman</string>
+    <string name="open_album">打开相册</string>
+    <string name="open_album_en">open album</string>
+    <string name="open_camera">打开相机</string>
+    <string name="open_camera_en">open camera</string>
+
     <string name="not_add_anthing">还没有添加任何事件</string>
     <string name="not_add_anthing_en">have not add anything</string>
 
