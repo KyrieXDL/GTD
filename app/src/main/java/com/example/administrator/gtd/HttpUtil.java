@@ -72,13 +72,15 @@ public class HttpUtil {
             //connection.setInstanceFollowRedirects(true);//是成员函数，仅作用于当前函数,设置这个连接是否可以被重定向
             connection.setReadTimeout(8000);//响应的超时时间
             connection.setRequestMethod("POST");//设置请求的方式
-            connection.setRequestProperty("Accept-Charset", "GBK");
-            connection.setRequestProperty("contentType", "GBK");
+            connection.setRequestProperty("Accept-Charset", "UTF-8");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+            /*connection.setRequestProperty("Accept-Charset", "GBK");
+            connection.setRequestProperty("contentType", "GBK");*/
 
             String info="msg="+msg+"&buildtime="+buildtime+"&alarmtime="+alarmtime+
                     "&level="+level+"&nextcontent="+ nextcontent + "&userid=" + userid;
             DataOutputStream out=new DataOutputStream(connection.getOutputStream());
-            out.writeBytes(info);
+            out.write(info.getBytes());
 
             InputStream in=connection.getInputStream();
             reader=new BufferedReader(new InputStreamReader(in));

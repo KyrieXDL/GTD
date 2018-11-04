@@ -100,6 +100,12 @@
     <string name="button_text_start_en">START</string>
     <string name="button_text_redo_en">REDO</string>
 
+    <string name="done">【已完成】</string>
+    <string name="undo">【未完成】</string>
+
     <item name="visible" type="id" />
     <item name="masked" type="id" />
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
 </resources>

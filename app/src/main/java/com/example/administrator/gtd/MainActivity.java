@@ -61,6 +61,7 @@ import com.example.administrator.gtd.animator.SunAnim_Lines;
 import com.example.administrator.gtd.inbox.InboxActivity;
 import com.example.administrator.gtd.navigation.HistoryActivity;
 
+import com.example.administrator.gtd.set.SetActivity;
 import com.example.administrator.gtd.user_info.UserInfoActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -302,6 +303,11 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             Toast.makeText(MainActivity.this, "暂未添加事件", Toast.LENGTH_SHORT).show();
                         }
                         //SharedPreferences sharedPreferences0=getSharedPreferences("data",MODE_PRIVATE);
+                        break;
+
+                    case R.id.set_item:
+                        Intent setIntent=new Intent(MainActivity.this,SetActivity.class);
+                        startActivity(setIntent);
                         break;
 
                     case R.id.mode:

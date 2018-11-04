@@ -53,6 +53,11 @@ public class AlarmActivity extends AppCompatActivity {
         final int num=Integer.parseInt(intent.getStringExtra("num1"));
        // Log.d("c",content);
 
+        int playMusic=intent.getIntExtra("play_music",0);
+        int music=intent.getIntExtra("music",0);
+        int isShake=intent.getIntExtra("isShake",0);
+        //Toast.makeText(this, "playMusic: "+playMusic+" music: "+music+" isShake: "+isShake, Toast.LENGTH_SHORT).show();
+
         //Glide.with(AlarmActivity.this).load(R.drawable.alarm_gif).into(imageView);
         alarmText.setText(content);
         /*do_it_now.setOnClickListener(new View.OnClickListener() {

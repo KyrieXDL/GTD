@@ -45,6 +45,8 @@
     <string name="button_text_redo">REDO</string>
     <string name="nodata">There is no content added</string>
 
+    <string name="done">【done】</string>
+    <string name="undo">【undo】</string>
 
     <string name="save">save change</string>
     <string name="name">name</string>

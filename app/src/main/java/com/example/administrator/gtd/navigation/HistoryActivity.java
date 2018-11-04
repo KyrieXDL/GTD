@@ -107,8 +107,12 @@ public class HistoryActivity extends AppCompatActivity implements ThemeManager.O
                 String month=listtemp[1];
                 String day=listtemp[2].substring(0,2);
 
+                String flag=getResources().getString(R.string.undo);
+                if (list.get(j).isDone()){
+                    flag=getResources().getString(R.string.done);
+                }
                 if (GroupData.get(i).equals(month+"月\n"+year+"年")){
-                    Child.add(new TimeLine(year+"年"+month+"月"+day+"日",list.get(j).getMsg()));
+                    Child.add(new TimeLine(year+"年"+month+"月"+day+"日",list.get(j).getMsg()+flag));
                 }
             }
 

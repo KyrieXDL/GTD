@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -419,14 +420,23 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    public void setReminder(boolean b,Long time,String content,int num) {
+    public void setReminder(boolean b,Long time,String content,int num,int level) {
         // get the AlarmManager instance
+
+        SharedPreferences sharedPreferences=getSharedPreferences("music_data",MODE_PRIVATE);
+        int music=sharedPreferences.getInt("music",0);
+        int playMusic=sharedPreferences.getInt("play_music",0);
+        int isShake=sharedPreferences.getInt("isShake",0);
         AlarmManager am= (AlarmManager) getSystemService(ALARM_SERVICE);
         // create a PendingIntent that will perform a broadcast
         Intent intent=new Intent(ContentActivity.this,MyReceiver.class);
         intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);//3.1以后的版本需要设置Intent.FLAG_INCLUDE_STOPPED_PACKAGES
         intent.putExtra("content1",content); //发送广播的同时，将事件的内容传给receiver，当点击通知时显示在界面上
         intent.putExtra("num1",num+"");  //num为每个事件唯一标号
+        intent.putExtra("level",level);
+        intent.putExtra("play_music",playMusic);
+        intent.putExtra("music",music);
+        intent.putExtra("isShake",isShake);
         PendingIntent pi= PendingIntent.getBroadcast(ContentActivity.this, num, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if(b){
@@ -552,7 +562,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                             String temptime=ContentHelper.getTimeBetweenContents(str_time,alarmTime);  //事件创立时间与事件提醒时间的相差时间
                             if(!alarmTime.equals(now)) {
                                 // setResult(RESULT_OK, intent);   //回调mainActivity中的onActivityResult方法
-                                setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity);
+                                setReminder(true,Integer.parseInt(temptime)+currentTime,text.getText().toString(),numFromContentActivity,level);
                             }
                             isSave=1;
                             finish();
@@ -602,7 +612,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                         //更新本地数据
                         DataSupport.updateAll(Content.class,values,"contentid=?",id+"");
                         if (Long.parseLong(temptime) >= 0) {
-                            setReminder(true, Integer.parseInt(temptime) + currentTime, text.getText().toString(), numFromContentActivity);
+                            setReminder(true, Integer.parseInt(temptime) + currentTime, text.getText().toString(), numFromContentActivity,level);
                         }
                     }catch (Exception e){
                         e.printStackTrace();

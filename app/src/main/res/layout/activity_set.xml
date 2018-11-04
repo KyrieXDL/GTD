@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.administrator.gtd.set.SetActivity">
+
+    <RelativeLayout
+        android:id="@+id/set1"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget">
+
+        <TextView
+            android:text="是否开启震动"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.suke.widget.SwitchButton
+            android:id="@+id/switch_button1"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/set2"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget"
+        android:layout_below="@+id/set1">
+
+        <TextView
+            android:text="是否开启提示音"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.suke.widget.SwitchButton
+            android:id="@+id/switch_button2"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/music"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget"
+        android:orientation="vertical"
+        android:layout_below="@+id/set2">
+
+        <TextView
+            android:id="@+id/text"
+            android:text="选择提示音"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RadioGroup
+            android:layout_marginTop="10dp"
+            android:id="@+id/radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/music1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="music1"
+                android:textSize="18dp"/>
+            <RadioButton
+                android:id="@+id/music2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="music2"
+                android:textSize="18dp"/>
+            <RadioButton
+                android:id="@+id/music3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="music3"
+                android:textSize="18dp"/>
+            <RadioButton
+                android:id="@+id/music4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="music4"
+                android:textSize="18dp"/>
+        </RadioGroup>
+
+    </LinearLayout>
+
+</RelativeLayout>
