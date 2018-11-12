@@ -6,19 +6,23 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.administrator.gtd.R;
+import com.example.administrator.gtd.ThemeManager;
 
 import java.io.File;
 
-public class SetActivity extends AppCompatActivity {
+public class SetActivity extends AppCompatActivity implements ThemeManager.OnThemeChangeListener{
 
     private com.suke.widget.SwitchButton switchButton1;
     private com.suke.widget.SwitchButton switchButton2;
@@ -28,15 +32,29 @@ public class SetActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private MediaPlayer mediaPlayer=new MediaPlayer();
     private LinearLayout musicLayout;
+    private RelativeLayout background_layout;
+    private RelativeLayout setShakeLayout;
+    private RelativeLayout setMusicLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set);
+        ThemeManager.registerThemeChangeListener(this);
+        Intent intent=getIntent();
+        int mode=intent.getIntExtra("mode",0);
+
+        if (mode==1){
+            ThemeManager.setThemeMode(ThemeManager.ThemeMode.NIGHT );
+        }else{
+            ThemeManager.setThemeMode(ThemeManager.ThemeMode.DAY );
+        }
 
         initViews();
         setListener();
+        initTheme();
     }
 
+    //初始化控件
     private void initViews(){
         switchButton1=(com.suke.widget.SwitchButton) findViewById(R.id.switch_button1);
         switchButton2=(com.suke.widget.SwitchButton) findViewById(R.id.switch_button2);
@@ -46,6 +64,9 @@ public class SetActivity extends AppCompatActivity {
         radioButton3=(RadioButton) findViewById(R.id.music3);
         radioButton4=(RadioButton) findViewById(R.id.music4);
         musicLayout=(LinearLayout) findViewById(R.id.music);
+        background_layout=(RelativeLayout) findViewById(R.id.background_layout);
+        setShakeLayout=(RelativeLayout) findViewById(R.id.set1);
+        setMusicLayout=(RelativeLayout) findViewById(R.id.set2);
         sharedPreferences=getSharedPreferences("music_data",MODE_PRIVATE);
         editor=getSharedPreferences("music_data",MODE_PRIVATE).edit();
         int playMusic=sharedPreferences.getInt("play_music",0);
@@ -76,6 +97,7 @@ public class SetActivity extends AppCompatActivity {
         }
     }
 
+    //设置监听事件
     private void setListener(){
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
@@ -190,5 +212,27 @@ public class SetActivity extends AppCompatActivity {
         animator.setDuration(0);
         animator.start();
 
+    }
+
+    public void initTheme(){
+        // 设置标题栏颜色
+        /*if(supportActionBar != null){
+            supportActionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(ThemeManager.getCurrentThemeRes(ExpandableListView.this, R.color.colorPrimary))));
+        }*/
+        // 设置状态栏颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.setStatusBarColor(getResources().getColor(ThemeManager.getCurrentThemeRes(SetActivity.this, R.color.colorPrimary)));
+        }
+
+        background_layout.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(SetActivity.this, R.color.backgroundColor)));
+        musicLayout.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(SetActivity.this, R.color.yellow)));
+        setShakeLayout.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(SetActivity.this, R.color.yellow)));
+        setMusicLayout.setBackgroundColor(getResources().getColor(ThemeManager.getCurrentThemeRes(SetActivity.this, R.color.yellow)));
+    }
+
+    @Override
+    public void onThemeChanged() {
+        initTheme();
     }
 }

@@ -97,6 +97,7 @@ public class RegistActivity extends AppCompatActivity {
         username_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Toast.makeText(RegistActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 setFocus();
             }
         });
@@ -109,15 +110,15 @@ public class RegistActivity extends AppCompatActivity {
                 if (!hasFocus){
                     //img1.setVisibility(View.VISIBLE);
                     String name=username_edit.getText().toString();
-                    if (!checkUsername(name) && !name.equals("")){
-                        //imageView.setImageResource(R.drawable.valid);
-                    }else if (name.equals("")){
+                    if (name.equals("")){
                         Toast.makeText(RegistActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
                         //imageView.setImageResource(R.drawable.invalid);
-                    }else if (checkUsername(name)){
+                    }
+                    if (checkUsername(name)){
                         Toast.makeText(RegistActivity.this, "用户已存在", Toast.LENGTH_SHORT).show();
                         //imageView.setImageResource(R.drawable.invalid);
                     }
+                    //Toast.makeText(RegistActivity.this, "nu", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -255,6 +256,7 @@ public class RegistActivity extends AppCompatActivity {
     }
 
     private boolean checkUsername(String username){
+        //Toast.makeText(this, "checking...", Toast.LENGTH_SHORT).show();
         for (int i=0;i<list.size();i++){
             if (list.get(i).getName().equals(username)){
                 return true;
@@ -279,7 +281,7 @@ public class RegistActivity extends AppCompatActivity {
 
                 if (res==1){
                     Toast.makeText(RegistActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-                    finish();
+                    //finish();
                 }else {
                     Toast.makeText(RegistActivity.this, "注册失败", Toast.LENGTH_SHORT).show();
                 }

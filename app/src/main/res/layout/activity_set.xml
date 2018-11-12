@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.administrator.gtd.set.SetActivity">
@@ -16,7 +17,7 @@
         android:background="@drawable/widget">
 
         <TextView
-            android:text="是否开启震动"
+            android:text="@string/vibration"
             android:textSize="20sp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
@@ -42,7 +43,7 @@
         android:layout_below="@+id/set1">
 
         <TextView
-            android:text="是否开启提示音"
+            android:text="@string/tone"
             android:textSize="20sp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
@@ -70,7 +71,7 @@
 
         <TextView
             android:id="@+id/text"
-            android:text="选择提示音"
+            android:text="@string/select_music"
             android:textSize="20sp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
@@ -87,25 +88,25 @@
                 android:id="@+id/music1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="music1"
+                android:text="@string/music1"
                 android:textSize="18dp"/>
             <RadioButton
                 android:id="@+id/music2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="music2"
+                android:text="@string/music2"
                 android:textSize="18dp"/>
             <RadioButton
                 android:id="@+id/music3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="music3"
+                android:text="@string/music3"
                 android:textSize="18dp"/>
             <RadioButton
                 android:id="@+id/music4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="music4"
+                android:text="@string/music4"
                 android:textSize="18dp"/>
         </RadioGroup>
 

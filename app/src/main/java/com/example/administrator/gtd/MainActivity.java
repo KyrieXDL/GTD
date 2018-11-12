@@ -307,6 +307,8 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
 
                     case R.id.set_item:
                         Intent setIntent=new Intent(MainActivity.this,SetActivity.class);
+                        int mode_set=sharedPreferences.getInt("mode",0);
+                        setIntent.putExtra("mode",mode_set);
                         startActivity(setIntent);
                         break;
 
@@ -542,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject object = new JSONObject(s);
@@ -645,7 +647,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject object = new JSONObject(s);

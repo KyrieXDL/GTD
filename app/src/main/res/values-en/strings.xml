@@ -47,6 +47,14 @@
 
     <string name="done">【done】</string>
     <string name="undo">【undo】</string>
+    
+    <string name="vibration">Open the vibration</string>
+    <string name="tone">Opening prompt tone</string>
+    <string name="select_music">Select music</string>
+    <string name="music1">music1</string>
+    <string name="music2">music2</string>
+    <string name="music3">music3</string>
+    <string name="music4">music4</string>
 
     <string name="save">save change</string>
     <string name="name">name</string>

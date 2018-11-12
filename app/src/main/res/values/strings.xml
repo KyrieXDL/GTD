@@ -103,6 +103,15 @@
     <string name="done">【已完成】</string>
     <string name="undo">【未完成】</string>
 
+    <string name="vibration">开启震动</string>
+    <string name="tone">开启提示音</string>
+    <string name="select_music">选择音乐</string>
+    <string name="music1">音乐1</string>
+    <string name="music2">音乐2</string>
+    <string name="music3">音乐3</string>
+    <string name="music4">音乐4</string>
+
+
     <item name="visible" type="id" />
     <item name="masked" type="id" />
     <string name="appwidget_text">EXAMPLE</string>

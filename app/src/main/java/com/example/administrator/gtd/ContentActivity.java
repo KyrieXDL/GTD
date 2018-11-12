@@ -195,7 +195,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         //第一个是菜单图标  第二个是菜单背景颜色  第三个是点击回调
-        unfoldButton.addElement(R.mipmap.ic_launcher,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent), new View.OnClickListener() {
+        unfoldButton.addElement(R.drawable.level3,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.colorAccent), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //这里写菜单的点击事件
@@ -204,7 +204,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 level=3;
             }
         });
-        unfoldButton.addElement(R.mipmap.ic_launcher,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5), new View.OnClickListener() {
+        unfoldButton.addElement(R.drawable.level2,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.color5), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //这里写菜单的点击事件
@@ -213,7 +213,7 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                 level=2;
             }
         });
-        unfoldButton.addElement(R.mipmap.ic_launcher,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow), new View.OnClickListener() {
+        unfoldButton.addElement(R.drawable.level1,ThemeManager.getCurrentThemeRes(ContentActivity.this, R.color.yellow), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //这里写菜单的点击事件
