@@ -338,6 +338,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         return false;
     }
 
+
+
     private class MyTask extends AsyncTask<String,Integer,String>
     {
 
@@ -354,7 +356,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
             OkHttpClient mOkHttpClent = new OkHttpClient();
             //File file = new File(path);
-            File file=new File(getExternalCacheDir(),"header_image.jpg");
+            File file=new File(getExternalCacheDir(),"header_image0.jpg");
             try{
                 if(file.exists()){
                     file.delete();

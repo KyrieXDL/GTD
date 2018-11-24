@@ -296,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements ThemeManager.OnTh
                             intent = new Intent(MainActivity.this, InboxActivity.class);
                             int mode0=sharedPreferences.getInt("mode",0);
                             intent.putExtra("mode",mode0);
+                            intent.putExtra("userid",userid);
                             startActivity(intent);
                         }else{
                             /*intent = new Intent(MainActivity.this, InboxActivity.class);

@@ -3,10 +3,12 @@ package com.example.administrator.gtd.inbox;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,15 +17,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.administrator.gtd.Content;
 import com.example.administrator.gtd.ContentActivity;
 import com.example.administrator.gtd.ContentHelper;
+import com.example.administrator.gtd.HttpUtil;
 import com.example.administrator.gtd.R;
 import com.example.administrator.gtd.ThemeManager;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.litepal.crud.DataSupport;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +39,6 @@ public class InboxActivity extends AppCompatActivity implements ThemeManager.OnT
 
     private Spinner spinner;
     private ArrayAdapter adapter;
-    private List<String> planlist;
-    private ArrayList<List<Content>> contentlist;
 
     private List<String> GroupData ;//定义组数据
     private List<List<String>> ChildrenData ;//定义组中的子数据
@@ -41,6 +46,7 @@ public class InboxActivity extends AppCompatActivity implements ThemeManager.OnT
     private ViewPager viewPager;
     private ViewPagerAdapter viewPageradapter;
     private RelativeLayout relativeLayout;
+    private int userid=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +88,14 @@ public class InboxActivity extends AppCompatActivity implements ThemeManager.OnT
     @Override
     protected void onResume() {
         super.onResume();
+        userid=getIntent().getIntExtra("userid",0);
+        String url = "http://120.79.7.33/query.php?userid="+userid;
+        new MyTask().execute(url);
         initial();
         spinner.setSelection(0);
         notifySpinner();
         notifyRefreshAdapter(0);
+
     }
 
     public void setClicked(final int position){
@@ -181,6 +191,7 @@ public class InboxActivity extends AppCompatActivity implements ThemeManager.OnT
         ChildrenData = new ArrayList<List<String>>();
         List<String> lastContentList=new ArrayList<>();
         ContentHelper.findLastContent(lastContentList,list);
+       // Toast.makeText(this, "lastListsize:"+lastContentList.size(), Toast.LENGTH_SHORT).show();
         if(lastContentList.size()>0){
             for(int i=0;i<lastContentList.size();i++){
                 GroupData.add(getResources().getText(R.string.schedule).toString()+"_"+(i+1));
@@ -222,4 +233,34 @@ public class InboxActivity extends AppCompatActivity implements ThemeManager.OnT
 
         relativeLayout=(RelativeLayout) findViewById(R.id.relative_layout);
     }
+
+    class MyTask extends AsyncTask<String,Integer,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtil.sendHttpRequest(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            try {
+                //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                Gson gson = new Gson();
+                Type type = new TypeToken<List<Content>>() {
+                }.getType();
+                List<Content> listtmp = gson.fromJson(s, type);
+                DataSupport.deleteAll(Content.class);
+                for (Content content : listtmp) {
+                    content.setContentid(content.getId());
+                    //Log.d("contentID",content.getId()+"");
+                    content.save();
+                }
+
+            }catch (Exception e){
+                e.getMessage();
+            }
+        }
+    }
+
 }

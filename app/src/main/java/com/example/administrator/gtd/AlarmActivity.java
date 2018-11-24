@@ -79,7 +79,7 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(TickView tickView, boolean isCheck) {
                 //do something here
-                if (flag==0) {
+
                     ContentValues value = new ContentValues();
                     value.put("isdone", true);
                     //DataSupport.updateAll(Content.class,value,"msg=?",content);
@@ -90,9 +90,6 @@ public class AlarmActivity extends AppCompatActivity {
                     //更新本地数据
                     DataSupport.updateAll(Content.class, value, "contentid=?", num + "");
                     flag=1;
-                }else{
-
-                }
             }
         });
     }

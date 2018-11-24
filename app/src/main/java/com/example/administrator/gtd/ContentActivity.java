@@ -598,8 +598,8 @@ public class ContentActivity extends AppCompatActivity implements View.OnClickLi
                     nextContentFromAdapter=nextContent;
                     level=content.getLevel();
 
-                    Log.d("alarmContent=",text.getText().toString());
-                    Log.d("numFromContentActivity",numFromContentActivity+"");
+                    /*Log.d("alarmContent=",text.getText().toString());
+                    Log.d("numFromContentActivity",numFromContentActivity+"");*/
                     //DataSupport.updateAll(Content.class,values,"num=?",numFromContentActivity+"");
 
                     int id=numFromContentActivity;
